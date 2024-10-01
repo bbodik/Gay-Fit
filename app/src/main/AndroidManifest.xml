@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GayFit"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@layout/activity_main" />
+
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".LoginActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -19,10 +29,13 @@
             android:theme="@style/Theme.GayFit">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".StartWorkoutActivity" />
+        <activity android:name=".WorkoutHistoryActivity" />
     </application>
 
 </manifest>

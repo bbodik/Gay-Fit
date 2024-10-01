@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.gayfit"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -38,6 +38,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+
         compose = true
     }
     composeOptions {
@@ -54,11 +55,18 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
+   // implementation("com.google.firebase:firebase-appcheck-playintegrity-ktx")
+
+
     // Android Jetpack
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
     implementation("androidx.room:room-runtime:2.5.0")
+    implementation(libs.firebase.appcheck.ktx)
+    implementation(libs.firebase.auth.ktx)
     annotationProcessor("androidx.room:room-compiler:2.5.0")
+
 
     // Firebase (для аутентифікації та бази даних)
     implementation("com.google.firebase:firebase-auth")
