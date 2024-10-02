@@ -20,13 +20,12 @@
         android:layout_height="wrap_content"
         android:text="Розпочати тренування"
         android:layout_marginTop="24dp"/>
+
     <Button
         android:id="@+id/programsButton"
-        android:text="Готові програми"
+        android:text="Тренувальні програми"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
-
+        android:layout_height="wrap_content"/>
     <Button
         android:id="@+id/workoutHistoryButton"
         android:layout_width="match_parent"

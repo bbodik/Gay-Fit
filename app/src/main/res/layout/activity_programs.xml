@@ -25,4 +25,19 @@
         android:text="Підвищення витривалості"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+
+        <Button
+            android:id="@+id/buttonCreateWorkout"
+            android:text="Створити власне тренування"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewWorkouts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
 </LinearLayout>

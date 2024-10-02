@@ -38,7 +38,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-
+        viewBinding = true
         compose = true
     }
     composeOptions {
@@ -52,6 +52,9 @@ android {
 }
 
 dependencies {
+    implementation("com.firebaseui:firebase-ui-auth:8.0.0")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity:17.0.0")
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
 
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
@@ -65,6 +68,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.5.0")
     implementation(libs.firebase.appcheck.ktx)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.appcheck.playintegrity)
     annotationProcessor("androidx.room:room-compiler:2.5.0")
 
 
@@ -92,6 +96,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
-
+apply(plugin = "com.google.gms.google-services")
 // Видаліть рядок нижче, оскільки плагін вже підключено в блоці plugins
 // apply plugin: 'com.google.gms.google-services'

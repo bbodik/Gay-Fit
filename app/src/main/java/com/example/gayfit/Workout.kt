@@ -13,3 +13,11 @@ data class Exercise(
     val sets: Int = 0,
     val reps: Int = 0
 )
+
+data class SharedWorkout(
+    var id: String = "",
+    val creatorId: String = "",
+    val title: String = "",
+    val exercises: List<Exercise> = listOf(),
+    var userCount: Long = 0 // Кількість користувачів, які використовують це тренування
+)

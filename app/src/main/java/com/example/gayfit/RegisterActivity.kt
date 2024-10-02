@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterActivity : AppCompatActivity() {
@@ -14,6 +15,7 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this) // Ініціалізація Firebase
         setContentView(R.layout.activity_register)
 
         auth = FirebaseAuth.getInstance()
@@ -21,17 +23,11 @@ class RegisterActivity : AppCompatActivity() {
         val emailEditText = findViewById<EditText>(R.id.editTextEmail)
         val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
         val registerButton = findViewById<Button>(R.id.buttonRegister)
-        // Після обробки реєстрації
         val loginButton = findViewById<Button>(R.id.buttonLogin)
-        loginButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
-
 
         registerButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
 
             if(email.isNotEmpty() && password.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email, password)
@@ -48,6 +44,11 @@ class RegisterActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Заповніть всі поля", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        loginButton.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
     }
 }
