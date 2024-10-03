@@ -39,7 +39,6 @@
         </activity>
 
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".StartWorkoutActivity" />
         <activity android:name=".WorkoutHistoryActivity" />
     </application>
 
