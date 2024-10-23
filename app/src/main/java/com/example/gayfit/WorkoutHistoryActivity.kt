@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.adapters.WorkoutAdapter
 import com.example.gayfit.models.Workout
+import com.example.gayfit.models.WorkoutCompleted
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -16,7 +17,8 @@ class WorkoutHistoryActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var recyclerView: RecyclerView
     private lateinit var workoutAdapter: WorkoutAdapter
-    private val workouts = mutableListOf<Workout>()
+    private val workouts = mutableListOf<WorkoutCompleted>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +44,12 @@ class WorkoutHistoryActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 workouts.clear()
                 for(document in result){
-                    val workout = document.toObject(Workout::class.java)
+                    val workout = document.toObject(WorkoutCompleted::class.java)
                     workouts.add(workout)
                 }
                 workoutAdapter.notifyDataSetChanged()
             }
+
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
             }

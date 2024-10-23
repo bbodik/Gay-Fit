@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.R
-import com.example.gayfit.models.Workout
+import com.example.gayfit.models.WorkoutCompleted
+import com.example.gayfit.models.ExerciseCompleted
+import com.example.gayfit.models.SetResult
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WorkoutAdapter(private val workouts: List<Workout>) :
+class WorkoutAdapter(private val workouts: List<WorkoutCompleted>) :
     RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
     class WorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,9 +33,14 @@ class WorkoutAdapter(private val workouts: List<Workout>) :
         val date = sdf.format(Date(workout.date))
         holder.dateTextView.text = date
         holder.programTextView.text = "Програма: ${workout.program}"
-        holder.exercisesTextView.text = workout.exercises.joinToString("\n") { exercise ->
-            "${exercise.name}: ${exercise.sets}x${exercise.reps}"
+
+        val exercisesText = workout.exercises.joinToString("\n") { exercise: ExerciseCompleted ->
+            val setsText = exercise.sets.joinToString("\n") { set: SetResult ->
+                "   Підхід ${set.setNumber}: ${set.reps} повторень, ${set.weight} кг"
+            }
+            "${exercise.name}:\n$setsText"
         }
+        holder.exercisesTextView.text = exercisesText
     }
 
     override fun getItemCount(): Int = workouts.size

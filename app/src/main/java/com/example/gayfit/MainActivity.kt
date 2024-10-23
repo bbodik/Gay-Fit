@@ -67,10 +67,10 @@ class MainActivity : AppCompatActivity() {
         val workoutHistoryButton = findViewById<Button>(R.id.workoutHistoryButton)
         val settingsButton = findViewById<Button>(R.id.settingsButton)
         val logoutButton = findViewById<Button>(R.id.logoutButton)
-        val programsButton = findViewById<Button>(R.id.programsButton)
+
 
         startWorkoutButton.setOnClickListener {
-            val intent = Intent(this, StartWorkoutActivity::class.java)
+            val intent = Intent(this, ProgramsActivity::class.java)
             startActivity(intent)
         }
 
@@ -84,10 +84,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        programsButton.setOnClickListener {
-            val intent = Intent(this, ProgramsActivity::class.java)
-            startActivity(intent)
-        }
+
+
+
 
         logoutButton.setOnClickListener {
             AuthUI.getInstance().signOut(this).addOnCompleteListener {

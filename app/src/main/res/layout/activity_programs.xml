@@ -6,38 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/buttonMuscleMass"
-        android:text="Нарощування м’язової маси"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/buttonFatBurning"
-        android:text="Спалювання жиру"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/buttonEndurance"
-        android:text="Підвищення витривалості"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-
-        <Button
-            android:id="@+id/buttonCreateWorkout"
-            android:text="Створити власне тренування"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewWorkouts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="367dp"
+        android:layout_height="600dp" />
 
+    <Button
+        android:id="@+id/buttonCreateWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
 
 
 </LinearLayout>

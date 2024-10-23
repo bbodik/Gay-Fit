@@ -23,6 +23,8 @@
             android:resource="@layout/activity_main" />
         <activity android:name=".CreateWorkoutActivity" />
         <activity android:name=".StartWorkoutActivity" />
+        <activity android:name=".WorkoutDetailsActivity" />
+        <activity android:name=".ExerciseActivity" />
         <activity android:name=".ProgramsActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />

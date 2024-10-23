@@ -1,23 +1,23 @@
-<!-- res/layout/activity_start_workout.xml -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_start_workout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
     android:padding="16dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/exercisesLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ProgressBar
+        android:id="@+id/progressBarLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible" />
 
-        <!-- Динамічно додані CheckBox для вправ -->
+    <TextView
+        android:id="@+id/textViewLoading"
+        android:text="Завантаження тренування..."
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/buttonSaveWorkout"
-        android:text="Зберегти тренування"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-</ScrollView>
+</LinearLayout>
