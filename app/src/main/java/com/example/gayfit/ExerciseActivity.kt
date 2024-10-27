@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.gayfit.models.ExerciseCompleted
 import com.example.gayfit.models.SetResult
+import com.google.android.material.appbar.MaterialToolbar
 import java.io.Serializable
 
 class ExerciseActivity : AppCompatActivity() {
@@ -54,7 +55,7 @@ class ExerciseActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        binding.textViewExerciseName.text = currentExercise.name
+        val toolbarExercise = findViewById<MaterialToolbar>(R.id.toolbarExercise)
         binding.textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExercise.sets}"
         binding.editTextReps.text?.clear()
         binding.editTextWeight.text?.clear()

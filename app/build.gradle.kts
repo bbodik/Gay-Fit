@@ -53,6 +53,11 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.android.material:material:1.9.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("com.google.firebase:firebase-auth:22.1.1")
+    implementation ("com.google.firebase:firebase-firestore:24.7.1")
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
     implementation("com.firebaseui:firebase-ui-auth:8.0.0")
     implementation("com.google.firebase:firebase-appcheck-playintegrity:17.0.0")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
@@ -70,6 +75,7 @@ dependencies {
     implementation(libs.firebase.appcheck.ktx)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.appcheck.debug)
     annotationProcessor("androidx.room:room-compiler:2.5.0")
 
 

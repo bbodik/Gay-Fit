@@ -1,44 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<!-- res/layout/activity_main.xml -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/mainMenuTitle"
+    <!-- Верхня панель -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        app:title="Fitness Tracker"
+        app:titleTextColor="@android:color/white"
+        app:menu="@menu/main_menu" />
+
+    <!-- Основний вміст -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Картка з сьогоднішньою активністю -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сьогоднішня активність"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:progress="75"
+                    app:indicatorColor="@color/accentColor" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопки дій -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/startWorkoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Розпочати тренування"
+            android:layout_marginTop="24dp"
+            style="@style/Widget.MaterialComponents.Button"
+            android:backgroundTint="@color/primaryColor"
+            app:icon="@drawable/ic_fitness"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/workoutHistoryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Історія тренувань"
+            android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/primaryColor"
+            app:icon="@drawable/ic_history"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+    </LinearLayout>
+
+    <!-- Плаваюча кнопка для створення нового тренування -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreateWorkout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Головне меню"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="Нове тренування"
+        app:srcCompat="@drawable/ic_add"
+        android:backgroundTint="@color/accentColor" />
 
-    <Button
-        android:id="@+id/startWorkoutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Розпочати тренування"
-        android:layout_marginTop="24dp"/>
-
-    <Button
-        android:id="@+id/workoutHistoryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Історія тренувань"
-        android:layout_marginTop="16dp"/>
-
-    <Button
-        android:id="@+id/settingsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Налаштування"
-        android:layout_marginTop="16dp"/>
-
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Вихід" />
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

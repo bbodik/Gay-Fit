@@ -14,13 +14,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import java.io.Serializable
 
-
 class ProgramsActivity : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
     private lateinit var workoutAdapter: SharedWorkoutAdapter
     private val workouts = mutableListOf<SharedWorkout>()
-    var auth = FirebaseAuth.getInstance()
+    private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityProgramsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,12 +30,15 @@ class ProgramsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
-        binding.buttonCreateWorkout.setOnClickListener {
+        // Налаштовуємо FloatingActionButton
+        binding.fabCreateWorkout.setOnClickListener {
             val intent = Intent(this, CreateWorkoutActivity::class.java)
             startActivity(intent)
         }
 
+        // Налаштовуємо RecyclerView
         binding.recyclerViewWorkouts.layoutManager = LinearLayoutManager(this)
         workoutAdapter = SharedWorkoutAdapter(workouts) { selectedWorkout ->
             // Обробка вибору тренування
@@ -76,6 +78,8 @@ class ProgramsActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
+
+
     private fun createMuscleMassWorkout(): SharedWorkout {
         val exercises = listOf(
             Exercise("Жим лежачи", 4, 8),

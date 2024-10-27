@@ -1,20 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<!-- res/layout/activity_settings.xml -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/backgroundColor"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textViewReminderTime"
-        android:text="Нагадування не встановлено"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/buttonSetReminder"
-        android:text="Встановити нагадування"
+    <!-- Верхня панель -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarSettings"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
-</LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:title="Налаштування"
+        android:titleTextColor="@android:color/white" />
+
+    <!-- Основний вміст -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <!-- Нагадування -->
+            <TextView
+                android:id="@+id/textViewReminderTime"
+                android:text="Нагадування не встановлено"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Кнопка встановлення нагадування -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSetReminder"
+                android:text="Встановити нагадування"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:backgroundTint="@color/accentColor" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

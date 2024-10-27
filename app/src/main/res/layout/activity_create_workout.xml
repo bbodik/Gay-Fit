@@ -1,33 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_create_workout.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editTextTitle"
-        android:hint="Назва тренування"
+    <!-- Верхня панель з назвою -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:title="Створити тренування"
+        android:titleTextColor="@android:color/white" />
 
-    <Button
-        android:id="@+id/buttonAddExercise"
-        android:text="Додати вправу"
+    <!-- Основний вміст зі скролом -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <LinearLayout
-        android:id="@+id/exercisesLayout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/buttonSaveWorkout"
-        android:text="Зберегти тренування"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+            <!-- Назва тренування -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Назва тренування">
 
-</LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Кнопка додавання вправи -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAddExercise"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Додати вправу"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:backgroundTint="@color/accentColor" />
+
+            <!-- Список вправ -->
+            <LinearLayout
+                android:id="@+id/exercisesLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <!-- Кнопка збереження тренування -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSaveWorkout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Зберегти тренування"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:backgroundTint="@color/primaryColor" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,28 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/dialog_add_exercise.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/backgroundColor"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="24dp"
     android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/editTextExerciseName"
+    <!-- Назва вправи -->
+    <com.google.android.material.textfield.TextInputLayout
         android:hint="Назва вправи"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/editTextSets"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextExerciseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Кількість сетів -->
+    <com.google.android.material.textfield.TextInputLayout
         android:hint="Кількість сетів"
-        android:inputType="number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
 
-    <EditText
-        android:id="@+id/editTextReps"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextSets"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Кількість повторень -->
+    <com.google.android.material.textfield.TextInputLayout
         android:hint="Кількість повторень"
-        android:inputType="number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextReps"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 </LinearLayout>

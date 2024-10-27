@@ -1,48 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_exercise.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textViewExerciseName"
-        android:text="Назва вправи"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/textViewSetNumber"
-        android:text="Підхід 1 з 3"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <EditText
-        android:id="@+id/editTextReps"
-        android:hint="Кількість повторень"
-        android:inputType="number"
+    <!-- Верхня панель з назвою вправи -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarExercise"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        android:title="Назва вправи"
+        android:titleTextColor="@android:color/white" />
 
-    <EditText
-        android:id="@+id/editTextWeight"
-        android:hint="Вага (кг)"
-        android:inputType="numberDecimal"
-        android:layout_marginTop="8dp"
+    <!-- Основний вміст -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <Button
-        android:id="@+id/buttonNext"
-        android:text="Далі"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <!-- Номер підходу -->
+            <TextView
+                android:id="@+id/textViewSetNumber"
+                android:text="Підхід 1 з 3"
+                android:textSize="18sp"
+                android:layout_marginBottom="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Кількість повторень -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Кількість повторень"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextReps"
+                    android:inputType="number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Вага -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Вага (кг)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextWeight"
+                    android:inputType="numberDecimal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Кнопка "Далі" -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonNext"
+                android:text="Далі"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button"
+                android:backgroundTint="@color/accentColor" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

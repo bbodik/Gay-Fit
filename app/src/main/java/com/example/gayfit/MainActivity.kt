@@ -2,6 +2,8 @@ package com.example.gayfit
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -65,8 +67,7 @@ class MainActivity : AppCompatActivity() {
         // Ініціалізація UI елементів MainActivity
         val startWorkoutButton = findViewById<Button>(R.id.startWorkoutButton)
         val workoutHistoryButton = findViewById<Button>(R.id.workoutHistoryButton)
-        val settingsButton = findViewById<Button>(R.id.settingsButton)
-        val logoutButton = findViewById<Button>(R.id.logoutButton)
+
 
 
         startWorkoutButton.setOnClickListener {
@@ -79,20 +80,29 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        settingsButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-        }
 
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
 
-
-
-
-        logoutButton.setOnClickListener {
-            AuthUI.getInstance().signOut(this).addOnCompleteListener {
-                Toast.makeText(this, "Ви вийшли з облікового запису", Toast.LENGTH_SHORT).show()
-                showSignInOptions()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
             }
+            R.id.action_logout -> {
+                AuthUI.getInstance().signOut(this).addOnCompleteListener {
+                    Toast.makeText(this, "Ви вийшли з облікового запису", Toast.LENGTH_SHORT).show()
+                    showSignInOptions()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
+
 }
