@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -18,9 +17,15 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
 
+        <!-- Видалено некоректні meta-data -->
+        <!-- Якщо вам потрібні App Actions, використовуйте правильний ресурс (JSON) -->
+        <!--
         <meta-data
             android:name="com.google.android.actions"
-            android:resource="@layout/activity_main" />
+            android:resource="@json/app_actions" />
+        -->
+
+        <!-- Оголошення лише активностей -->
         <activity android:name=".CreateWorkoutActivity" />
         <activity android:name=".StartWorkoutActivity" />
         <activity android:name=".WorkoutDetailsActivity" />
@@ -28,6 +33,9 @@
         <activity android:name=".ProgramsActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
+        <activity android:name=".WorkoutHistoryActivity" />
+        <!-- Видалено WorkoutAdapter та WorkoutReminderWorker -->
+        <activity android:name=".SettingsActivity" />
 
         <activity
             android:name=".MainActivity"
@@ -36,12 +44,11 @@
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".WorkoutHistoryActivity" />
     </application>
 
 </manifest>

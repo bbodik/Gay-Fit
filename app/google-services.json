@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "945518842180",
     "project_id": "gay-fit",
-    "storage_bucket": "gay-fit.appspot.com"
+    "storage_bucket": "gay-fit.firebasestorage.app"
   },
   "client": [
     {

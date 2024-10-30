@@ -123,4 +123,5 @@ class ExerciseActivity : AppCompatActivity() {
                 Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
 }

@@ -4,11 +4,8 @@ import android.app.Application
 import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-
-// Якщо використовуєте Debug провайдер:
-// import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 
 class MyApplication : Application() {
     override fun onCreate() {
@@ -21,11 +18,16 @@ class MyApplication : Application() {
         }
 
         try {
+            // Використовуйте DebugAppCheckProviderFactory для розробки
+            // Замініть на PlayIntegrityAppCheckProviderFactory для продакшн
             FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-               // PlayIntegrityAppCheckProviderFactory.getInstance()
-                DebugAppCheckProviderFactory.getInstance()
+
+                    DebugAppCheckProviderFactory.getInstance()
+
+                   // PlayIntegrityAppCheckProviderFactory.getInstance()
+
             )
-            Log.d("MyApplication", "App Check initialized with SafetyNet")
+            Log.d("MyApplication", "App Check initialized successfully")
         } catch (e: Exception) {
             Log.e("MyApplication", "Failed to initialize App Check", e)
         }
