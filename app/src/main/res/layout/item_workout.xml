@@ -3,11 +3,12 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/WorkoutCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="12dp">
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,29 +19,34 @@
         <!-- Дата тренування -->
         <TextView
             android:id="@+id/textViewDate"
-            android:text="Дата"
-            android:textStyle="bold"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Дата: 01.01.2024"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface" />
 
         <!-- Назва програми -->
         <TextView
             android:id="@+id/textViewProgram"
-            android:text="Програма"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Програма: Сила"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="@color/colorOnSurfaceVariant"/>
+
 
         <!-- Список вправ -->
         <TextView
             android:id="@+id/textViewExercises"
-            android:text="Вправи"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Вправи: Присідання, Жим лежачи, Підтягування"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="@color/colorOnSurfaceVariant"/>
+
 
     </LinearLayout>
 

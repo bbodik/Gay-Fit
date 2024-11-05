@@ -1,0 +1,42 @@
+<!-- res/layout/item_exercise_selection.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:layout_height="wrap_content">
+
+    <CheckBox
+        android:id="@+id/checkBoxSelectExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <!-- Назва вправи -->
+        <TextView
+            android:id="@+id/textViewExerciseName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Назва вправи"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textStyle="bold"
+            android:textColor="@color/colorOnSurface" />
+
+        <!-- М'язові групи -->
+        <TextView
+            android:id="@+id/textViewMuscleGroups"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="М'язові групи: "
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorOnSurfaceVariant" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,29 +1,35 @@
+// ExerciseActivity.kt
 package com.example.gayfit
 
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.gayfit.databinding.ActivityExerciseBinding
 import com.example.gayfit.models.Exercise
+import com.example.gayfit.models.ExerciseCompleted
+import com.example.gayfit.models.ExerciseInWorkout
+import com.example.gayfit.models.MediaType
+import com.example.gayfit.models.SetResult
 import com.example.gayfit.models.WorkoutCompleted
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.gayfit.models.ExerciseCompleted
-import com.example.gayfit.models.SetResult
-import com.google.android.material.appbar.MaterialToolbar
-import java.io.Serializable
 
 class ExerciseActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityExerciseBinding
-    private lateinit var exercises: List<Exercise>
+    private lateinit var exercises: List<ExerciseInWorkout>
     private var currentExerciseIndex = 0
     private var currentSetNumber = 1
-    private lateinit var currentExercise: Exercise
+    private lateinit var currentExerciseInWorkout: ExerciseInWorkout
     private val userInputs = mutableListOf<ExerciseCompleted>()
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private var workoutTitle: String = ""
+    private var exoPlayer: ExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +39,7 @@ class ExerciseActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        exercises = intent.getSerializableExtra("EXERCISES") as? List<Exercise> ?: emptyList()
+        exercises = intent.getSerializableExtra("EXERCISES") as? List<ExerciseInWorkout> ?: emptyList()
         workoutTitle = intent.getStringExtra("WORKOUT_TITLE") ?: ""
 
         if (exercises.isEmpty()) {
@@ -42,7 +48,7 @@ class ExerciseActivity : AppCompatActivity() {
             return
         }
 
-        currentExercise = exercises[currentExerciseIndex]
+        currentExerciseInWorkout = exercises[currentExerciseIndex]
 
         updateUI()
 
@@ -55,10 +61,36 @@ class ExerciseActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        val toolbarExercise = findViewById<MaterialToolbar>(R.id.toolbarExercise)
-        binding.textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExercise.sets}"
+        val currentExercise = currentExerciseInWorkout.exercise
+        binding.textViewExerciseName.text = currentExercise.name
+        binding.textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExerciseInWorkout.sets}"
         binding.editTextReps.text?.clear()
         binding.editTextWeight.text?.clear()
+
+        // Відображення медіа-контенту
+        displayExerciseMedia(currentExercise)
+    }
+
+    private fun displayExerciseMedia(exercise: Exercise) {
+        when (exercise.mediaType) {
+            MediaType.IMAGE, MediaType.GIF -> {
+                binding.imageViewExercise.visibility = View.VISIBLE
+                binding.videoViewExercise.visibility = View.GONE
+                Glide.with(this)
+                    .load(exercise.mediaUrl)
+                    .into(binding.imageViewExercise)
+            }
+            MediaType.VIDEO -> {
+                binding.imageViewExercise.visibility = View.GONE
+                binding.videoViewExercise.visibility = View.VISIBLE
+                exoPlayer = ExoPlayer.Builder(this).build()
+                binding.videoViewExercise.player = exoPlayer
+                val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(Uri.parse(exercise.mediaUrl))
+                exoPlayer?.setMediaItem(mediaItem)
+                exoPlayer?.prepare()
+                exoPlayer?.play()
+            }
+        }
     }
 
     private fun validateInput(): Boolean {
@@ -76,11 +108,12 @@ class ExerciseActivity : AppCompatActivity() {
     private fun saveUserInput() {
         val reps = binding.editTextReps.text.toString().toInt()
         val weight = binding.editTextWeight.text.toString().toDouble()
+        val currentExercise = currentExerciseInWorkout.exercise
 
         // Знаходимо чи вже є записана ця вправа
         var exerciseCompleted = userInputs.find { it.name == currentExercise.name }
         if (exerciseCompleted == null) {
-            exerciseCompleted = ExerciseCompleted(name = currentExercise.name)
+            exerciseCompleted = ExerciseCompleted(name = currentExercise.name, muscleGroups = currentExercise.muscleGroups)
             userInputs.add(exerciseCompleted)
         }
 
@@ -88,14 +121,18 @@ class ExerciseActivity : AppCompatActivity() {
     }
 
     private fun proceedToNextSetOrExercise() {
-        if (currentSetNumber < currentExercise.sets) {
+        if (currentSetNumber < currentExerciseInWorkout.sets) {
             currentSetNumber++
             updateUI()
         } else {
+            // Зупиняємо відео перед переходом
+            exoPlayer?.release()
+            exoPlayer = null
+
             // Переходимо до наступної вправи
             if (currentExerciseIndex < exercises.size - 1) {
                 currentExerciseIndex++
-                currentExercise = exercises[currentExerciseIndex]
+                currentExerciseInWorkout = exercises[currentExerciseIndex]
                 currentSetNumber = 1
                 updateUI()
             } else {
@@ -113,7 +150,7 @@ class ExerciseActivity : AppCompatActivity() {
             program = workoutTitle
         )
 
-        db.collection("workouts")
+        db.collection("workout_results")
             .add(userWorkout)
             .addOnSuccessListener {
                 Toast.makeText(this, "Тренування збережено", Toast.LENGTH_SHORT).show()
@@ -124,4 +161,8 @@ class ExerciseActivity : AppCompatActivity() {
             }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        exoPlayer?.release()
+    }
 }

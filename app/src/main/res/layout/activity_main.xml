@@ -11,10 +11,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
-        app:title="Fitness Tracker"
-        app:titleTextColor="@android:color/white"
-        app:menu="@menu/main_menu" />
+        android:background="?attr/colorPrimary"
+        android:title="Fitness Tracker"
+        android:titleTextColor="@color/colorOnPrimary"
+        app:navigationIcon="@drawable/ic_menu"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
     <!-- Основний вміст -->
     <LinearLayout
@@ -25,70 +26,41 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- Картка з сьогоднішньою активністю -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Сьогоднішня активність"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:progress="75"
-                    app:indicatorColor="@color/accentColor" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <!-- Кнопки дій -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startWorkoutButton"
+            style="@style/PrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Розпочати тренування"
             android:layout_marginTop="24dp"
-            style="@style/Widget.MaterialComponents.Button"
-            android:backgroundTint="@color/primaryColor"
+            android:text="Розпочати тренування"
             app:icon="@drawable/ic_fitness"
             app:iconGravity="textStart"
             app:iconPadding="8dp" />
 
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/workoutHistoryButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Історія тренувань"
             android:layout_marginTop="16dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="@color/primaryColor"
+            android:text="Історія тренувань"
             app:icon="@drawable/ic_history"
             app:iconGravity="textStart"
-            app:iconPadding="8dp" />
+            app:iconPadding="8dp"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="1dp"
+            android:textColor="@color/colorPrimary" />
+        <Button
+            android:id="@+id/statisticsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Статистика" />
 
     </LinearLayout>
 
-    <!-- Плаваюча кнопка для створення нового тренування -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabCreateWorkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="Нове тренування"
-        app:srcCompat="@drawable/ic_add"
-        android:backgroundTint="@color/accentColor" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

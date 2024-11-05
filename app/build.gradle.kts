@@ -70,6 +70,14 @@ dependencies {
 
     // Firebase UI для аутентифікації
     implementation("com.firebaseui:firebase-ui-auth:8.0.0")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation(libs.firebase.storage.ktx)
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+
+    implementation ("com.google.android.exoplayer:exoplayer:2.18.5")
+
+
+    implementation ("com.github.PhilJay:MPAndroidChart:${rootProject.extra["mpandroidchartVersion"]}")
 
     // Android Jetpack
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -83,6 +91,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.5.0")
     implementation("androidx.room:room-ktx:2.5.0") // Краща інтеграція з Kotlin
     kapt("androidx.room:room-compiler:2.5.0")
+    implementation ("com.google.android.material:material:1.9.0") // Або остання версія
+    implementation("com.google.android.material:material:1.11.0-alpha03")
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.8.1")

@@ -13,3 +13,4 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0") // Виправлено версію до 1.9.0
     }
 }
+val mpandroidchartVersion by extra("3.1.0")

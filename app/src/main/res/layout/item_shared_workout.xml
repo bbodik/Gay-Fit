@@ -3,19 +3,27 @@
     android:layout_width="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Назва програми"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:textColor="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/textViewUserCount"
-        android:textSize="14sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Кількість користувачів: 120"
+        android:textSize="14sp"
+        android:textColor="@color/colorOnSurfaceVariant"></TextView>
+
+
 
 </LinearLayout>

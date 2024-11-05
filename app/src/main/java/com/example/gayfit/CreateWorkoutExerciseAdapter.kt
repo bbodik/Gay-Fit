@@ -1,4 +1,4 @@
-// ExerciseAdapter.kt
+// CreateWorkoutExerciseAdapter.kt
 package com.example.gayfit.adapters
 
 import android.view.LayoutInflater
@@ -9,17 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.R
 import com.example.gayfit.models.ExerciseInWorkout
 
-class ExerciseAdapter(private val exercises: List<ExerciseInWorkout>) :
-    RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder>() {
+class CreateWorkoutExerciseAdapter(
+    private val exercises: List<ExerciseInWorkout>
+) : RecyclerView.Adapter<CreateWorkoutExerciseAdapter.ExerciseViewHolder>() {
 
-    class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ExerciseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val exerciseNameTextView: TextView = itemView.findViewById(R.id.textViewExerciseName)
         val exerciseDetailsTextView: TextView = itemView.findViewById(R.id.textViewExerciseDetails)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExerciseViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_exercise, parent, false)
+            .inflate(R.layout.item_exercise_create_workout, parent, false)
         return ExerciseViewHolder(view)
     }
 

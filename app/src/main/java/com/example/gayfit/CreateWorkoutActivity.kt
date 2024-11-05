@@ -1,91 +1,143 @@
 // CreateWorkoutActivity.kt
 package com.example.gayfit
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.gayfit.adapters.CreateWorkoutExerciseAdapter
+import com.example.gayfit.databinding.ActivityCreateWorkoutBinding
 import com.example.gayfit.models.Exercise
+import com.example.gayfit.models.ExerciseInWorkout
 import com.example.gayfit.models.SharedWorkout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CreateWorkoutActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityCreateWorkoutBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private val exercises = mutableListOf<Exercise>()
+    private val exercisesInWorkout = mutableListOf<ExerciseInWorkout>()
+
+    private lateinit var recyclerViewExercises: RecyclerView
+    private lateinit var exerciseAdapter: CreateWorkoutExerciseAdapter
+
+    private val REQUEST_SELECT_EXERCISES = 1
+    private val REQUEST_ADD_EXERCISE = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Переконайтеся, що ви маєте відповідний layout файл
-        setContentView(R.layout.activity_create_workout)
+        binding = ActivityCreateWorkoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        val titleEditText = findViewById<EditText>(R.id.editTextTitle)
-        val addExerciseButton = findViewById<Button>(R.id.buttonAddExercise)
-        val saveWorkoutButton = findViewById<Button>(R.id.buttonSaveWorkout)
-        val exercisesLayout = findViewById<LinearLayout>(R.id.exercisesLayout)
+        val titleEditText = binding.editTextTitle
+        val selectExercisesButton = binding.buttonSelectExercises
+        val saveWorkoutButton = binding.buttonSaveWorkout
+        val addExerciseButton = binding.buttonAddExercise
 
+        // Ініціалізація RecyclerView та адаптера
+        recyclerViewExercises = binding.recyclerViewExercises
+        exerciseAdapter = CreateWorkoutExerciseAdapter(exercisesInWorkout)
+        recyclerViewExercises.layoutManager = LinearLayoutManager(this)
+        recyclerViewExercises.adapter = exerciseAdapter
+
+        selectExercisesButton.setOnClickListener {
+            val intent = Intent(this, ExerciseSelectionActivity::class.java)
+            startActivityForResult(intent, REQUEST_SELECT_EXERCISES)
+        }
+
+        // Обробник для кнопки створення нової вправи
         addExerciseButton.setOnClickListener {
-            showAddExerciseDialog(exercisesLayout)
+            val intent = Intent(this, AddExerciseActivity::class.java)
+            startActivityForResult(intent, REQUEST_ADD_EXERCISE)
         }
 
         saveWorkoutButton.setOnClickListener {
             val title = titleEditText.text.toString().trim()
-            if (title.isNotEmpty() && exercises.isNotEmpty()) {
+            if (title.isNotEmpty() && exercisesInWorkout.isNotEmpty()) {
                 val sharedWorkout = SharedWorkout(
                     creatorId = auth.currentUser?.uid ?: "",
                     title = title,
-                    exercises = exercises,
+                    exercises = exercisesInWorkout,
                     userCount = 1 // Творець автоматично використовує тренування
                 )
                 db.collection("shared_workouts")
                     .add(sharedWorkout)
-                    .addOnSuccessListener {
+                    .addOnSuccessListener { documentReference ->
                         Toast.makeText(this, "Тренування створено", Toast.LENGTH_SHORT).show()
+
+                        // Запуск StartWorkoutActivity
+                        val intent = Intent(this, StartWorkoutActivity::class.java).apply {
+                            putExtra("WORKOUT_EXERCISES", ArrayList(exercisesInWorkout))
+                        }
+                        startActivity(intent)
+
                         finish()
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                Toast.makeText(this, "Заповніть всі поля", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Заповніть всі поля та додайте хоча б одну вправу", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showAddExerciseDialog(exercisesLayout: LinearLayout) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_exercise, null)
-        val exerciseNameEditText = dialogView.findViewById<EditText>(R.id.editTextExerciseName)
-        val setsEditText = dialogView.findViewById<EditText>(R.id.editTextSets)
-        val repsEditText = dialogView.findViewById<EditText>(R.id.editTextReps)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK || data == null) return
 
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Додати вправу")
-            .setView(dialogView)
-            .setPositiveButton("Додати") { _, _ ->
-                val name = exerciseNameEditText.text.toString().trim()
-                val sets = setsEditText.text.toString().toIntOrNull() ?: 0
-                val reps = repsEditText.text.toString().toIntOrNull() ?: 0
-
-                if (name.isNotEmpty() && sets > 0 && reps > 0) {
-                    val exercise = Exercise(name, sets, reps)
-                    exercises.add(exercise)
-                    val textView = TextView(this)
-                    textView.text = "${exercise.name}: ${exercise.sets}x${exercise.reps}"
-                    exercisesLayout.addView(textView)
-                } else {
-                    Toast.makeText(this, "Заповніть всі поля правильно", Toast.LENGTH_SHORT).show()
+        when (requestCode) {
+            REQUEST_SELECT_EXERCISES -> {
+                val selectedExercises = data.getSerializableExtra("SELECTED_EXERCISES") as? List<Exercise>
+                if (selectedExercises != null) {
+                    // Показуємо діалог для введення сетів і повторень для кожної вправи
+                    for (exercise in selectedExercises) {
+                        showSetRepsDialog(exercise)
+                    }
                 }
             }
-            .setNegativeButton("Скасувати", null)
-            .create()
+            REQUEST_ADD_EXERCISE -> {
+                val newExercise = data.getSerializableExtra("EXERCISE") as? Exercise
+                if (newExercise != null) {
+                    showSetRepsDialog(newExercise)
+                }
+            }
+        }
+    }
 
+    private fun showSetRepsDialog(exercise: Exercise) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_set_reps, null)
+        val setsEditText = dialogView.findViewById<android.widget.EditText>(R.id.editTextSets)
+        val repsEditText = dialogView.findViewById<android.widget.EditText>(R.id.editTextReps)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Введіть сети та повторення для ${exercise.name}")
+            .setView(dialogView)
+            .setPositiveButton("ОК") { _, _ ->
+                val sets = setsEditText.text.toString().toIntOrNull() ?: 0
+                val reps = repsEditText.text.toString().toIntOrNull() ?: 0
+                if (sets > 0 && reps > 0) {
+                    val exerciseInWorkout = ExerciseInWorkout(
+                        exercise = exercise,
+                        sets = sets,
+                        reps = reps
+                    )
+                    exercisesInWorkout.add(exerciseInWorkout)
+                    exerciseAdapter.notifyItemInserted(exercisesInWorkout.size - 1)
+                } else {
+                    Toast.makeText(this, "Невірні значення сетів або повторень", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Відмінити", null)
+            .create()
         dialog.show()
     }
 }

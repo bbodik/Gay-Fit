@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_workout_history.xml -->
+<!-- res/layout/activity_statistics.xml -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?android:attr/windowBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,22 +8,30 @@
 
     <!-- Верхня панель -->
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarWorkoutHistory"
+        android:id="@+id/toolbarStatistics"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:title="Історія тренувань"
+        android:title="Статистика"
         android:titleTextColor="@color/colorOnPrimary"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
     <!-- Основний вміст -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewWorkouts"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Графік -->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

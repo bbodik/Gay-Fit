@@ -80,50 +80,7 @@ class ProgramsActivity : AppCompatActivity() {
     }
 
 
-    private fun createMuscleMassWorkout(): SharedWorkout {
-        val exercises = listOf(
-            Exercise("Жим лежачи", 4, 8),
-            Exercise("Присідання зі штангою", 4, 8),
-            Exercise("Станова тяга", 4, 8)
-        )
-        return SharedWorkout(
-            id = "",
-            creatorId = auth.currentUser?.uid ?: "",
-            title = "Нарощування м’язової маси",
-            exercises = exercises,
-            userCount = 1
-        )
-    }
 
-    private fun createFatBurningWorkout(): SharedWorkout {
-        val exercises = listOf(
-            Exercise("Біг на місці", 5, 1),
-            Exercise("Берпі", 4, 15),
-            Exercise("Скакалка", 5, 1)
-        )
-        return SharedWorkout(
-            id = "",
-            creatorId = auth.currentUser?.uid ?: "",
-            title = "Спалювання жиру",
-            exercises = exercises,
-            userCount = 1
-        )
-    }
-
-    private fun createEnduranceWorkout(): SharedWorkout {
-        val exercises = listOf(
-            Exercise("Біг на довгу дистанцію", 1, 30),
-            Exercise("Планка", 3, 1),
-            Exercise("Велосипед", 1, 60)
-        )
-        return SharedWorkout(
-            id = "",
-            creatorId = auth.currentUser?.uid ?: "",
-            title = "Підвищення витривалості",
-            exercises = exercises,
-            userCount = 1
-        )
-    }
     private fun startWorkout(workout: SharedWorkout) {
         val intent = Intent(this, ExerciseActivity::class.java).apply {
             putExtra("EXERCISES", workout.exercises as Serializable)

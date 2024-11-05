@@ -2,7 +2,8 @@
 <!-- res/layout/activity_register.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/backgroundColor"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/windowBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
@@ -12,11 +13,12 @@
         android:layout_height="wrap_content"
         android:padding="24dp"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center_horizontal">
 
         <!-- Лого або зображення -->
         <ImageView
             android:src="@drawable/app_logo"
+            android:contentDescription="Лого додатку"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginBottom="24dp" />
@@ -25,13 +27,14 @@
         <com.google.android.material.textfield.TextInputLayout
             android:hint="Email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextEmail"
-                android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -40,35 +43,57 @@
             android:hint="Пароль"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="16dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextPassword"
-                android:inputType="textPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Підтвердження паролю -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:hint="Підтвердити пароль"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Кнопка "Зареєструватися" -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonRegister"
-            android:text="Зареєструватися"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            style="@style/Widget.MaterialComponents.Button"
-            android:backgroundTint="@color/primaryColor" />
+            android:text="Зареєструватися"
+            app:backgroundTint="@color/colorPrimary"
+            app:icon="@android:drawable/ic_menu_save"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
 
         <!-- Кнопка "Увійти" -->
         <TextView
             android:id="@+id/buttonLogin"
-            android:text="Вже маєш акаунт? Увійти"
-            android:textColor="@color/accentColor"
-            android:gravity="center"
+            android:layout_width="359dp"
+            android:layout_height="69dp"
             android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Вже маєш акаунт? Увійти"
+            android:textColor="@color/colorSecondary" />
 
     </LinearLayout>
 

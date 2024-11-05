@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_create_workout.xml -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/windowBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,9 +10,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
+        android:background="?attr/colorPrimary"
         android:title="Створити тренування"
-        android:titleTextColor="@android:color/white" />
+        android:titleTextColor="@color/colorOnPrimary"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
     <!-- Основний вміст зі скролом -->
     <ScrollView
@@ -28,6 +30,7 @@
 
             <!-- Назва тренування -->
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Назва тренування">
@@ -35,37 +38,56 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Кнопка додавання вправи -->
+            <!-- Кнопка вибору вправ з бази -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSelectExercises"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Вибрати вправи з бази"
+                app:backgroundTint="@color/colorSecondary"
+                app:icon="@android:drawable/ic_menu_add"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <!-- Кнопка додавання нової вправи -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonAddExercise"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Додати вправу"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="@color/accentColor" />
+                android:layout_marginTop="8dp"
+                android:text="Створити нову вправу"
+                app:icon="@android:drawable/ic_input_add"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
 
-            <!-- Список вправ -->
-            <LinearLayout
-                android:id="@+id/exercisesLayout"
-                android:orientation="vertical"
+            <!-- Список вибраних вправ -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewExercises"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false" />
 
             <!-- Кнопка збереження тренування -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSaveWorkout"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:text="Зберегти тренування"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="@color/primaryColor" />
+                app:backgroundTint="@color/colorPrimary"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
 
         </LinearLayout>
 

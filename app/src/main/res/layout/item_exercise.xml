@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="12dp">
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,8 +21,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Назва вправи"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textStyle="bold"
+            android:textColor="@color/colorOnSurface" />
 
         <!-- Деталі вправи -->
         <TextView
@@ -30,8 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Деталі вправи"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:layout_marginTop="4dp" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorOnSurfaceVariant" />
 
         <!-- Поля вводу для повторень та ваги -->
         <LinearLayout
@@ -46,13 +48,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:hint="Повторення">
+                android:hint="Повторення"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextReps"
-                    android:inputType="number"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,13 +64,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Вага (кг)">
+                android:hint="Вага (кг)"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextWeight"
-                    android:inputType="numberDecimal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,12 +80,14 @@
         <!-- Кнопка "Далі" -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonNextExercise"
-            android:text="Далі"
+            style="@style/SecondaryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            style="@style/Widget.MaterialComponents.Button"
-            android:backgroundTint="@color/accentColor" />
+            android:text="Далі"
+            app:icon="@android:drawable/ic_media_next"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
 
     </LinearLayout>
 

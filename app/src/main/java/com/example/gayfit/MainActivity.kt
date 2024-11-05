@@ -79,6 +79,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, WorkoutHistoryActivity::class.java)
             startActivity(intent)
         }
+        val statisticsButton = findViewById<Button>(R.id.statisticsButton)
+        statisticsButton.setOnClickListener {
+            val intent = Intent(this, StatisticsActivity::class.java)
+            startActivity(intent)
+        }
 
 
     }

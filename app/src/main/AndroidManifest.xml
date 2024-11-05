@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
     <application
         android:name=".MyApplication"
@@ -34,6 +36,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".WorkoutHistoryActivity" />
+        <activity android:name=".AddExerciseActivity" />
         <!-- Видалено WorkoutAdapter та WorkoutReminderWorker -->
         <activity android:name=".SettingsActivity" />
 
