@@ -1,20 +1,21 @@
+// MainActivity.kt
 package com.example.gayfit
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gayfit.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivityMainBinding
 
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
@@ -32,8 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this) // Ініціалізація Firebase
-        setContentView(R.layout.activity_main)
+        // Ініціалізація View Binding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
 
@@ -43,6 +45,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Користувач увійшов, показати MainActivity
             setupMainUI()
+        }
+
+        // Приклад кнопки виходу
+        binding.buttonLogout.setOnClickListener {
+            auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            // Очищаємо стек активностей
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
     }
 
@@ -63,30 +74,26 @@ class MainActivity : AppCompatActivity() {
         signInLauncher.launch(signInIntent)
     }
 
-    private fun setupMainUI() {
+    fun setupMainUI() {
         // Ініціалізація UI елементів MainActivity
-        val startWorkoutButton = findViewById<Button>(R.id.startWorkoutButton)
-        val workoutHistoryButton = findViewById<Button>(R.id.workoutHistoryButton)
+        binding.apply {
+            startWorkoutButton.setOnClickListener {
+                val intent = Intent(this@MainActivity, ProgramsActivity::class.java)
+                startActivity(intent)
+            }
 
+            workoutHistoryButton.setOnClickListener {
+                val intent = Intent(this@MainActivity, WorkoutHistoryActivity::class.java)
+                startActivity(intent)
+            }
 
-
-        startWorkoutButton.setOnClickListener {
-            val intent = Intent(this, ProgramsActivity::class.java)
-            startActivity(intent)
+            statisticsButton.setOnClickListener {
+                val intent = Intent(this@MainActivity, StatisticsActivity::class.java)
+                startActivity(intent)
+            }
         }
-
-        workoutHistoryButton.setOnClickListener {
-            val intent = Intent(this, WorkoutHistoryActivity::class.java)
-            startActivity(intent)
-        }
-        val statisticsButton = findViewById<Button>(R.id.statisticsButton)
-        statisticsButton.setOnClickListener {
-            val intent = Intent(this, StatisticsActivity::class.java)
-            startActivity(intent)
-        }
-
-
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
@@ -109,5 +116,4 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 }

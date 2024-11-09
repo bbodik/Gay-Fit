@@ -1,57 +1,84 @@
-// ExerciseActivity.kt
 package com.example.gayfit
+
+import android.content.Context
+import android.net.ConnectivityManager
+import com.example.gayfit.ExerciseEntity
+import com.example.gayfit.SetEntity
+import com.example.gayfit.WorkoutEntity
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.bumptech.glide.Glide
 import com.example.gayfit.databinding.ActivityExerciseBinding
-import com.example.gayfit.models.Exercise
-import com.example.gayfit.models.ExerciseCompleted
-import com.example.gayfit.models.ExerciseInWorkout
-import com.example.gayfit.models.MediaType
-import com.example.gayfit.models.SetResult
-import com.example.gayfit.models.WorkoutCompleted
-import com.google.android.exoplayer2.ExoPlayer
+import com.example.gayfit.models.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.io.Serializable
+import androidx.work.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ExerciseActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityExerciseBinding
-    private lateinit var exercises: List<ExerciseInWorkout>
+    private var _binding: ActivityExerciseBinding? = null
+    private val binding get() = _binding!!
+
+    private var exercises: List<ExerciseInWorkout> = emptyList()
     private var currentExerciseIndex = 0
     private var currentSetNumber = 1
     private lateinit var currentExerciseInWorkout: ExerciseInWorkout
     private val userInputs = mutableListOf<ExerciseCompleted>()
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
+
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private var workoutTitle: String = ""
+
     private var exoPlayer: ExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityExerciseBinding.inflate(layoutInflater)
+        _binding = ActivityExerciseBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        setupInitialData()
+        setupClickListeners()
+    }
 
-        exercises = intent.getSerializableExtra("EXERCISES") as? List<ExerciseInWorkout> ?: emptyList()
-        workoutTitle = intent.getStringExtra("WORKOUT_TITLE") ?: ""
+    private fun setupInitialData() {
+        try {
+            @Suppress("UNCHECKED_CAST")
+            exercises = intent.getSerializableExtra("EXERCISES") as? List<ExerciseInWorkout>
+                ?: throw IllegalArgumentException("No exercises provided")
 
-        if (exercises.isEmpty()) {
-            Toast.makeText(this, "Немає вправ для виконання", Toast.LENGTH_SHORT).show()
+            workoutTitle = intent.getStringExtra("WORKOUT_TITLE")
+                ?: throw IllegalArgumentException("No workout title provided")
+
+            if (exercises.isEmpty()) {
+                showError("Немає вправ для виконання")
+                finish()
+                return
+            }
+
+            currentExerciseInWorkout = exercises[currentExerciseIndex]
+            updateUI()
+        } catch (e: Exception) {
+            showError("Помилка ініціалізації: ${e.message}")
             finish()
-            return
         }
+    }
 
-        currentExerciseInWorkout = exercises[currentExerciseIndex]
-
-        updateUI()
-
+    private fun setupClickListeners() {
         binding.buttonNext.setOnClickListener {
             if (validateInput()) {
                 saveUserInput()
@@ -62,47 +89,84 @@ class ExerciseActivity : AppCompatActivity() {
 
     private fun updateUI() {
         val currentExercise = currentExerciseInWorkout.exercise
-        binding.textViewExerciseName.text = currentExercise.name
-        binding.textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExerciseInWorkout.sets}"
-        binding.editTextReps.text?.clear()
-        binding.editTextWeight.text?.clear()
+        binding.apply {
+            textViewExerciseName.text = currentExercise.name
+            // Замість використання ресурсу рядка
+            textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExerciseInWorkout.sets}"
+            editTextReps.text?.clear()
+            editTextWeight.text?.clear()
+        }
 
-        // Відображення медіа-контенту
         displayExerciseMedia(currentExercise)
     }
 
     private fun displayExerciseMedia(exercise: Exercise) {
-        when (exercise.mediaType) {
-            MediaType.IMAGE, MediaType.GIF -> {
-                binding.imageViewExercise.visibility = View.VISIBLE
-                binding.videoViewExercise.visibility = View.GONE
-                Glide.with(this)
-                    .load(exercise.mediaUrl)
-                    .into(binding.imageViewExercise)
+        if (isNetworkAvailable()) {
+        binding.apply {
+            when (exercise.mediaType) {
+                MediaType.IMAGE, MediaType.GIF -> {
+                    imageViewExercise.visibility = View.VISIBLE
+                    playerViewExercise.visibility = View.GONE
+                    exoPlayer?.release()
+                    exoPlayer = null
+
+                    Glide.with(this@ExerciseActivity)
+                        .load(exercise.mediaUrl)
+                        .error(R.drawable.placeholder_exercise)
+                        .into(imageViewExercise)
+                }
+
+                MediaType.VIDEO -> {
+                    imageViewExercise.visibility = View.GONE
+                    playerViewExercise.visibility = View.VISIBLE
+                    setupPlayer(exercise.mediaUrl, playerViewExercise)
+                }
             }
-            MediaType.VIDEO -> {
-                binding.imageViewExercise.visibility = View.GONE
-                binding.videoViewExercise.visibility = View.VISIBLE
-                exoPlayer = ExoPlayer.Builder(this).build()
-                binding.videoViewExercise.player = exoPlayer
-                val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(Uri.parse(exercise.mediaUrl))
-                exoPlayer?.setMediaItem(mediaItem)
-                exoPlayer?.prepare()
-                exoPlayer?.play()
-            }
+        }
+        } else {
+            Toast.makeText(this, "Немає інтернет-з'єднання. Медіа недоступне.", Toast.LENGTH_SHORT).show()
+
         }
     }
 
+    private fun setupPlayer(mediaUrl: String, playerView: PlayerView) {
+        exoPlayer?.release()
+        exoPlayer = ExoPlayer.Builder(this).build().apply {
+            repeatMode = Player.REPEAT_MODE_ALL
+            playerView.player = this
+            setMediaItem(MediaItem.fromUri(Uri.parse(mediaUrl)))
+            prepare()
+            playWhenReady = true
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
     private fun validateInput(): Boolean {
         val repsText = binding.editTextReps.text.toString()
         val weightText = binding.editTextWeight.text.toString()
 
-        if (repsText.isEmpty() || weightText.isEmpty()) {
-            Toast.makeText(this, "Будь ласка, введіть кількість повторень та вагу", Toast.LENGTH_SHORT).show()
-            return false
+        return when {
+            repsText.isEmpty() -> {
+                showError("Будь ласка, введіть кількість повторень")
+                false
+            }
+            weightText.isEmpty() -> {
+                showError("Будь ласка, введіть вагу")
+                false
+            }
+            else -> try {
+                repsText.toInt()
+                weightText.toDouble()
+                true
+            } catch (e: NumberFormatException) {
+                showError("Будь ласка, введіть коректні числові значення")
+                false
+            }
         }
-
-        return true
     }
 
     private fun saveUserInput() {
@@ -110,59 +174,151 @@ class ExerciseActivity : AppCompatActivity() {
         val weight = binding.editTextWeight.text.toString().toDouble()
         val currentExercise = currentExerciseInWorkout.exercise
 
-        // Знаходимо чи вже є записана ця вправа
-        var exerciseCompleted = userInputs.find { it.name == currentExercise.name }
-        if (exerciseCompleted == null) {
-            exerciseCompleted = ExerciseCompleted(name = currentExercise.name, muscleGroups = currentExercise.muscleGroups)
-            userInputs.add(exerciseCompleted)
-        }
+        if (binding.checkBoxApplyToAllSets.isChecked) {
+            // Додаємо дані для всіх підходів цієї вправи
+            val exerciseCompleted = ExerciseCompleted(
+                name = currentExercise.name,
+                muscleGroups = currentExercise.muscleGroups
+            )
 
-        exerciseCompleted.sets.add(SetResult(currentSetNumber, reps, weight))
+            for (setNumber in 1..currentExerciseInWorkout.sets) {
+                exerciseCompleted.sets.add(SetResult(setNumber, reps, weight))
+            }
+
+            userInputs.add(exerciseCompleted)
+        } else {
+            // Зберігаємо дані тільки для поточного підходу
+            val exerciseCompleted = userInputs.find { it.name == currentExercise.name } ?: ExerciseCompleted(
+                name = currentExercise.name,
+                muscleGroups = currentExercise.muscleGroups
+            ).also { userInputs.add(it) }
+
+            exerciseCompleted.sets.add(SetResult(currentSetNumber, reps, weight))
+        }
     }
 
-    private fun proceedToNextSetOrExercise() {
-        if (currentSetNumber < currentExerciseInWorkout.sets) {
-            currentSetNumber++
-            updateUI()
-        } else {
-            // Зупиняємо відео перед переходом
-            exoPlayer?.release()
-            exoPlayer = null
 
-            // Переходимо до наступної вправи
+
+    private fun proceedToNextSetOrExercise() {
+        if (binding.checkBoxApplyToAllSets.isChecked) {
+            // Якщо обрано застосувати до всіх підходів, переходимо до наступної вправи
             if (currentExerciseIndex < exercises.size - 1) {
                 currentExerciseIndex++
                 currentExerciseInWorkout = exercises[currentExerciseIndex]
                 currentSetNumber = 1
                 updateUI()
             } else {
-                // Тренування завершено
                 saveWorkout()
+            }
+        } else {
+            if (currentSetNumber >= currentExerciseInWorkout.sets) {
+                // Якщо всі підходи для поточної вправи завершено, переходимо до наступної вправи
+                if (currentExerciseIndex < exercises.size - 1) {
+                    currentExerciseIndex++
+                    currentExerciseInWorkout = exercises[currentExerciseIndex]
+                    currentSetNumber = 1
+                    updateUI()
+                } else {
+                    saveWorkout()
+                }
+            } else {
+                // Переходимо до наступного підходу
+                currentSetNumber++
+                updateUI()
             }
         }
     }
 
-    private fun saveWorkout() {
-        val userWorkout = WorkoutCompleted(
-            userId = auth.currentUser?.uid ?: "",
-            date = System.currentTimeMillis(),
-            exercises = userInputs,
-            program = workoutTitle
-        )
 
-        db.collection("workout_results")
-            .add(userWorkout)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Тренування збережено", Toast.LENGTH_SHORT).show()
-                finish()
+
+    private fun saveWorkout() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
+
+                val workout = WorkoutEntity(
+                    userId = userId,
+                    date = System.currentTimeMillis(),
+                    program = workoutTitle
+                )
+
+                val workoutId = WorkoutDatabase.getDatabase(this@ExerciseActivity)
+                    .workoutDao()
+                    .insertWorkout(workout)
+
+                Log.d("ExerciseActivity", "Збережено тренування з ID: $workoutId")
+
+                for (exerciseCompleted in userInputs) {
+                    val exerciseEntity = ExerciseEntity(
+                        workoutId = workoutId,
+                        name = exerciseCompleted.name,
+                        muscleGroups = exerciseCompleted.muscleGroups
+                    )
+
+                    val exerciseId = WorkoutDatabase.getDatabase(this@ExerciseActivity)
+                        .workoutDao()
+                        .insertExercise(exerciseEntity)
+
+                    Log.d("ExerciseActivity", "Збережено вправу з ID: $exerciseId для тренування ID: $workoutId")
+
+                    for (set in exerciseCompleted.sets) {
+                        val setId = WorkoutDatabase.getDatabase(this@ExerciseActivity)
+                            .workoutDao()
+                            .insertSet(
+                                SetEntity(
+                                    exerciseId = exerciseId,
+                                    setNumber = set.setNumber,
+                                    reps = set.reps,
+                                    weight = set.weight
+                                )
+                            )
+                        Log.d("ExerciseActivity", "Збережено підхід з ID: $setId для вправи ID: $exerciseId")
+                    }
+                }
+
+                // Додаємо лог перед запуском воркера для синхронізації
+                Log.d("ExerciseActivity", "Тренування збережено локально, готуємо синхронізацію")
+
+                // Запуск воркера для синхронізації з Firebase
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+
+                val syncWorkRequest = OneTimeWorkRequestBuilder<WorkoutSyncWorker>()
+                    .setConstraints(constraints)
+                    .build()
+
+                WorkManager.getInstance(this@ExerciseActivity).enqueue(syncWorkRequest)
+
+                withContext(Dispatchers.Main) {
+                    showSuccess("Тренування збережено локально")
+                    finish()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    showError("Помилка при збереженні тренування: ${e.message}")
+                }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        }
+    }
+
+
+
+
+
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showSuccess(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         exoPlayer?.release()
+        exoPlayer = null
+        _binding = null
     }
 }

@@ -145,7 +145,7 @@ class AddExerciseActivity : AppCompatActivity() {
         val exercise = Exercise(
             id = exerciseId,
             name = name,
-            guide = mediaUrl, // Використовуємо mediaUrl як гайд
+            guide = mediaUrl, // Використовуйте mediaUrl як гайд (можливо, це не найкраща практика)
             description = description,
             muscleGroups = muscleGroups,
             mediaUrl = mediaUrl,
@@ -166,6 +166,7 @@ class AddExerciseActivity : AppCompatActivity() {
                 Toast.makeText(this, "Помилка збереження вправи: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

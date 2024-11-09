@@ -8,12 +8,17 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gayfit.adapters.ExerciseSelectionAdapter
 
 import com.example.gayfit.databinding.ActivityExerciseSelectionBinding
 import com.example.gayfit.models.Exercise
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class ExerciseSelectionActivity : AppCompatActivity() {
 
@@ -36,12 +41,11 @@ class ExerciseSelectionActivity : AppCompatActivity() {
 
         binding.buttonConfirmSelection.setOnClickListener {
             val resultIntent = Intent().apply {
-                putExtra("SELECTED_EXERCISES", selectedExercises as ArrayList<Exercise>)
+                putExtra("SELECTED_EXERCISES", ArrayList(selectedExercises))
             }
             setResult(Activity.RESULT_OK, resultIntent)
             finish()
         }
-
         binding.buttonConfirmSelection.setOnClickListener {
             val resultIntent = Intent().apply {
                 putExtra("SELECTED_EXERCISES", ArrayList(selectedExercises))
@@ -67,21 +71,31 @@ class ExerciseSelectionActivity : AppCompatActivity() {
     }
 
     private fun fetchExercises(query: String) {
-        db.collection("exercises")
-            .orderBy("name")
-            .startAt(query)
-            .endAt(query + "\uf8ff")
-            .get()
-            .addOnSuccessListener { result ->
+        val queryRef = if (query.isEmpty()) {
+            db.collection("exercises").orderBy("name").limit(50)
+        } else {
+            db.collection("exercises")
+                .orderBy("name")
+                .startAt(query)
+                .endAt(query + "\uf8ff")
+                .limit(50)
+        }
+
+        lifecycleScope.launch {
+            try {
+                val result = queryRef.get().await()
                 exercises.clear()
                 for (document in result) {
                     val exercise = document.toObject(Exercise::class.java)
                     exercises.add(exercise)
                 }
                 adapter.notifyDataSetChanged()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ExerciseSelectionActivity, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        }
     }
+
 }

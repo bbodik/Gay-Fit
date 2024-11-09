@@ -60,7 +60,7 @@ class CreateWorkoutActivity : AppCompatActivity() {
         }
 
         saveWorkoutButton.setOnClickListener {
-            val title = titleEditText.text.toString().trim()
+            val title = binding.editTextTitle.text.toString().trim()
             if (title.isNotEmpty() && exercisesInWorkout.isNotEmpty()) {
                 val sharedWorkout = SharedWorkout(
                     creatorId = auth.currentUser?.uid ?: "",
@@ -88,6 +88,7 @@ class CreateWorkoutActivity : AppCompatActivity() {
                 Toast.makeText(this, "Заповніть всі поля та додайте хоча б одну вправу", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

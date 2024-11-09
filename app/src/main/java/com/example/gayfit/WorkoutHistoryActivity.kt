@@ -4,12 +4,18 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.adapters.WorkoutAdapter
 import com.example.gayfit.models.WorkoutCompleted
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class WorkoutHistoryActivity : AppCompatActivity() {
 
@@ -36,25 +42,30 @@ class WorkoutHistoryActivity : AppCompatActivity() {
     private fun fetchWorkouts() {
         val userId = auth.currentUser?.uid ?: return
 
-        Log.d("WorkoutHistory", "Fetching workouts for userId: $userId")
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val result = db.collection("workout_results")
+                    .whereEqualTo("userId", userId)
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
 
-        db.collection("workouts")
-            .whereEqualTo("userId", userId)
-            .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                Log.d("WorkoutHistory", "Successfully fetched workouts: ${result.size()}")
                 workouts.clear()
                 for (document in result) {
-                    Log.d("WorkoutHistory", "Document ID: ${document.id}, Data: ${document.data}")
                     val workout = document.toObject(WorkoutCompleted::class.java)
+                    Log.d("WorkoutHistory", "Отримано тренування: $workout")
                     workouts.add(workout)
                 }
-                workoutAdapter.notifyDataSetChanged()
+
+                withContext(Dispatchers.Main) {
+                    workoutAdapter.notifyDataSetChanged()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@WorkoutHistoryActivity, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
-            .addOnFailureListener { e ->
-                Log.e("WorkoutHistory", "Error fetching workouts", e)
-                Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        }
     }
+
 }

@@ -1,39 +1,80 @@
-// adapters/SharedWorkoutAdapter.kt
+// SharedWorkoutAdapter.kt
 package com.example.gayfit.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.view.menu.MenuView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.R
 import com.example.gayfit.models.SharedWorkout
+import com.example.gayfit.SavedWorkoutEntity
+import com.example.gayfit.models.WorkoutItem
 
 class SharedWorkoutAdapter(
-    private val workouts: List<SharedWorkout>,
-    private val onWorkoutSelected: (SharedWorkout) -> Unit
-) : RecyclerView.Adapter<SharedWorkoutAdapter.WorkoutViewHolder>() {
+    private var items: List<WorkoutItem>,
+    private val onWorkoutSelected: (SharedWorkout) -> Unit,
+    private val onSavedWorkoutSelected: (SavedWorkoutEntity) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    inner class WorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
-        val userCountTextView: TextView = itemView.findViewById(R.id.textViewUserCount)
+    companion object {
+        private const val VIEW_TYPE_ONLINE = 1
+        private const val VIEW_TYPE_SAVED = 2
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_shared_workout, parent, false)
-        return WorkoutViewHolder(view)
+    fun updateItems(newItems: List<WorkoutItem>) {
+        items = newItems
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
-        val workout = workouts[position]
-        holder.titleTextView.text = workout.title
-        holder.userCountTextView.text = "Користувачів: ${workout.userCount}"
-        holder.itemView.setOnClickListener {
-            onWorkoutSelected(workout)
+    override fun getItemViewType(position: Int): Int {
+        return when (items[position]) {
+            is WorkoutItem.Online -> VIEW_TYPE_ONLINE
+            is WorkoutItem.Saved -> VIEW_TYPE_SAVED
         }
     }
 
-    override fun getItemCount(): Int = workouts.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == VIEW_TYPE_ONLINE) {
+            val view = inflater.inflate(R.layout.item_shared_workout, parent, false)
+            OnlineWorkoutViewHolder(view)
+        } else {
+            val view = inflater.inflate(R.layout.item_saved_workout, parent, false)
+            SavedWorkoutViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = items[position]) {
+            is WorkoutItem.Online -> {
+                (holder as OnlineWorkoutViewHolder).bind(item.workout)
+            }
+            is WorkoutItem.Saved -> {
+                (holder as SavedWorkoutViewHolder).bind(item.workout)
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    inner class OnlineWorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
+        private val userCountTextView: TextView = itemView.findViewById(R.id.textViewUserCount)
+
+        fun bind(workout: SharedWorkout) {
+            titleTextView.text = workout.title
+            userCountTextView.text = "Користувачів: ${workout.userCount}"
+            itemView.setOnClickListener { onWorkoutSelected(workout) }
+        }
+    }
+
+    inner class SavedWorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
+
+        fun bind(workout: SavedWorkoutEntity) {
+            titleTextView.text = workout.title
+            itemView.setOnClickListener { onSavedWorkoutSelected(workout) }
+        }
+    }
 }

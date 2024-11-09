@@ -2,10 +2,14 @@ package com.example.gayfit
 
 import android.app.Application
 import android.util.Log
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class MyApplication : Application() {
     override fun onCreate() {
@@ -31,5 +35,10 @@ class MyApplication : Application() {
         } catch (e: Exception) {
             Log.e("MyApplication", "Failed to initialize App Check", e)
         }
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+
     }
 }

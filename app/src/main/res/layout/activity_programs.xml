@@ -1,50 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_programs.xml -->
+<!-- activity_programs.xml -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:attr/windowBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Верхня панель -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarPrograms"
+    <!-- AppBarLayout with Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:title="Програми тренувань"
-        android:titleTextColor="@color/colorOnPrimary"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+        android:layout_height="wrap_content">
 
-    <!-- Основний вміст -->
-    <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="Тренування"
+            android:titleTextColor="@color/colorPrimaryVariant" />
+
+        <!-- TabLayout без TabItem -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- RecyclerView for workouts -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewWorkouts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:padding="16dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <!-- Список тренувальних програм -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewWorkouts"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingBottom="16dp"
-            android:clipToPadding="false" />
-
-        <!-- Плаваюча кнопка для створення нової програми -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabCreateWorkout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:contentDescription="Створити програму"
-            app:srcCompat="@android:drawable/ic_input_add"
-            app:tint="@color/colorOnSecondary"
-            app:backgroundTint="@color/colorSecondary" />
-
-    </LinearLayout>
-
+    <!-- FloatingActionButton -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreateWorkout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Створити тренування" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

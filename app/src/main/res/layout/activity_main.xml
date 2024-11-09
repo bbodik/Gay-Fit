@@ -7,15 +7,6 @@
     android:layout_height="match_parent">
 
     <!-- Верхня панель -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:title="Fitness Tracker"
-        android:titleTextColor="@color/colorOnPrimary"
-        app:navigationIcon="@drawable/ic_menu"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
     <!-- Основний вміст -->
     <LinearLayout
@@ -28,6 +19,17 @@
         <!-- Картка з сьогоднішньою активністю -->
 
         <!-- Кнопки дій -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="Fitness Tracker"
+            android:titleTextColor="@color/colorOnPrimary"
+            app:navigationIcon="@drawable/ic_menu"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startWorkoutButton"
             style="@style/PrimaryButton"
@@ -55,9 +57,16 @@
             android:textColor="@color/colorPrimary" />
         <Button
             android:id="@+id/statisticsButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Статистика" />
+            android:text="Статистика"
+            android:layout_marginTop="16dp"/>
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Вийти"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 

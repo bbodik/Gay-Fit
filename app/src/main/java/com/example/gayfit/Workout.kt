@@ -1,16 +1,12 @@
 // Workout.kt
 package com.example.gayfit.models
 
+import com.example.gayfit.SavedWorkoutEntity
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.IgnoreExtraProperties
 import java.io.Serializable
 
-data class Workout(
-    val id: String = "",
-    val userId: String = "",
-    val date: Long = 0L,
-    val exercises: List<ExerciseInWorkout> = listOf(),
-    val program: String = ""
-)
-
+@IgnoreExtraProperties
 data class Exercise(
     var id: String = "",
     var name: String = "",
@@ -19,10 +15,10 @@ data class Exercise(
     var muscleGroups: List<String> = emptyList(),
     var mediaUrl: String = "",
     var mediaType: MediaType = MediaType.IMAGE,
-    var createdBy: String = ""
+    var createdBy: String = "",
+    var timestamp: Long? = null // Додане поле timestamp
 ) : Serializable {
-    // Порожній конструктор без параметрів
-    constructor() : this("", "", "", "", emptyList(), "", MediaType.IMAGE, "")
+
 }
 
 data class ExerciseInWorkout(
@@ -33,11 +29,7 @@ data class ExerciseInWorkout(
 ) : Serializable {
     // Порожній конструктор без параметрів автоматично генерується
 }
-enum class MediaType : Serializable {
-    IMAGE,
-    VIDEO,
-    GIF
-}
+
 data class SharedWorkout(
     var id: String = "",
     var creatorId: String = "",
@@ -46,26 +38,38 @@ data class SharedWorkout(
     var userCount: Int = 0
 ) : Serializable {
     // Порожній конструктор без параметрів
-    constructor() : this("", "", "", emptyList(), 0)
+
 }
 
+@IgnoreExtraProperties
 data class WorkoutCompleted(
-    val id: String = "",
-    val userId: String = "",
-    val date: Long = 0L,
-    val exercises: List<ExerciseCompleted> = listOf(),
-    val program: String = ""
-) : Serializable
+    var id: String = "",
+    var userId: String = "",
+    var date: Long = 0L,
+    var program: String = "",
+    var exercises: List<ExerciseCompleted> = listOf()
+)
 
+@IgnoreExtraProperties
 data class ExerciseCompleted(
-    val name: String = "",
-    val sets: MutableList<SetResult> = mutableListOf(),
-    val muscleGroups: List<String> = listOf(),
+    var name: String = "",
+    var muscleGroups: List<String> = listOf(),
+    var sets: MutableList<SetResult> = mutableListOf()
+)
 
-) : Serializable
-
+@IgnoreExtraProperties
 data class SetResult(
-    val setNumber: Int = 0,
-    val reps: Int = 0,
-    val weight: Double = 0.0
-) : Serializable
+    var setNumber: Int = 0,
+    var reps: Int = 0,
+    var weight: Double = 0.0
+)
+
+enum class MediaType : Serializable {
+    IMAGE,
+    VIDEO,
+    GIF
+}
+sealed class WorkoutItem {
+    data class Online(val workout: SharedWorkout) : WorkoutItem()
+    data class Saved(val workout: SavedWorkoutEntity) : WorkoutItem()
+}

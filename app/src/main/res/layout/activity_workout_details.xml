@@ -64,6 +64,18 @@
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                 android:textColor="?attr/colorOnBackground" />
 
+            <!-- Кнопка Like -->
+            <ImageButton
+                android:id="@+id/buttonLikeWorkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_heart_outline"
+                android:contentDescription="Вподобати тренування"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="8dp"
+                app:tint="?attr/colorControlNormal" />
+
+
             <!-- Опис тренування -->
             <TextView
                 android:id="@+id/textViewWorkoutDescription"
@@ -81,6 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:nestedScrollingEnabled="false" />
+
 
             <!-- Кнопка "Розпочати тренування" -->
             <com.google.android.material.button.MaterialButton

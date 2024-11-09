@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
     <application
@@ -28,6 +29,7 @@
         -->
 
         <!-- Оголошення лише активностей -->
+        <activity android:name=".ui.ExerciseDetailActivity" />
         <activity android:name=".CreateWorkoutActivity" />
         <activity android:name=".StartWorkoutActivity" />
         <activity android:name=".WorkoutDetailsActivity" />
@@ -37,6 +39,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".WorkoutHistoryActivity" />
         <activity android:name=".AddExerciseActivity" />
+        <activity android:name=".StatisticsActivity" />
         <!-- Видалено WorkoutAdapter та WorkoutReminderWorker -->
         <activity android:name=".SettingsActivity" />
 

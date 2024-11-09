@@ -7,8 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gayfit.R
 import com.example.gayfit.models.WorkoutCompleted
-import com.example.gayfit.models.ExerciseCompleted
-import com.example.gayfit.models.SetResult
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,8 +32,8 @@ class WorkoutAdapter(private val workouts: List<WorkoutCompleted>) :
         holder.dateTextView.text = date
         holder.programTextView.text = "Програма: ${workout.program}"
 
-        val exercisesText = workout.exercises.joinToString("\n") { exercise: ExerciseCompleted ->
-            val setsText = exercise.sets.joinToString("\n") { set: SetResult ->
+        val exercisesText = workout.exercises.joinToString("\n") { exercise ->
+            val setsText = exercise.sets.joinToString("\n") { set ->
                 "   Підхід ${set.setNumber}: ${set.reps} повторень, ${set.weight} кг"
             }
             "${exercise.name}:\n$setsText"
