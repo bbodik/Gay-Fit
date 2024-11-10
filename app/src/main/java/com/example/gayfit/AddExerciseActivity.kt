@@ -1,4 +1,3 @@
-// AddExerciseActivity.kt
 package com.example.gayfit
 
 import android.Manifest
@@ -9,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -49,15 +49,9 @@ class AddExerciseActivity : AppCompatActivity() {
             return
         }
 
-        // Перевірка та запит дозволу
-        checkReadExternalStoragePermission()
-
-        // Налаштування вибору медіа
+        // Налаштування кнопки вибору медіа
         binding.buttonSelectMedia.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
-            startActivityForResult(Intent.createChooser(intent, "Виберіть медіа"), REQUEST_CODE_SELECT_MEDIA)
+            checkAndRequestPermissions()
         }
 
         // Обробка кнопки збереження
@@ -66,30 +60,59 @@ class AddExerciseActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkReadExternalStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_CODE_READ_EXTERNAL_STORAGE
+    private fun checkAndRequestPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            val permissions = arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO
             )
+
+            if (permissions.all {
+                    ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+                }) {
+                openMediaPicker()
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    permissions,
+                    REQUEST_CODE_READ_EXTERNAL_STORAGE
+                )
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+                openMediaPicker()
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    AlertDialog.Builder(this)
+                        .setTitle("Потрібен дозвіл")
+                        .setMessage("Для вибору медіафайлу потрібен доступ до сховища.")
+                        .setPositiveButton("Надати дозвіл") { _, _ ->
+                            ActivityCompat.requestPermissions(
+                                this,
+                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                REQUEST_CODE_READ_EXTERNAL_STORAGE
+                            )
+                        }
+                        .setNegativeButton("Відміна", null)
+                        .show()
+                } else {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        REQUEST_CODE_READ_EXTERNAL_STORAGE
+                    )
+                }
+            }
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_READ_EXTERNAL_STORAGE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Дозвіл надано
-            } else {
-                Toast.makeText(this, "Потрібен дозвіл для доступу до файлів", Toast.LENGTH_SHORT).show()
-            }
-        }
+    private fun openMediaPicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
+        startActivityForResult(Intent.createChooser(intent, "Виберіть медіа"), REQUEST_CODE_SELECT_MEDIA)
     }
 
     private fun saveExercise() {
@@ -113,7 +136,6 @@ class AddExerciseActivity : AppCompatActivity() {
     }
 
     private fun uploadMediaFile(uri: Uri, onSuccess: (String) -> Unit) {
-        // Перевірка доступу до файлу
         try {
             val inputStream = contentResolver.openInputStream(uri)
             inputStream?.close()
@@ -145,7 +167,7 @@ class AddExerciseActivity : AppCompatActivity() {
         val exercise = Exercise(
             id = exerciseId,
             name = name,
-            guide = mediaUrl, // Використовуйте mediaUrl як гайд (можливо, це не найкраща практика)
+            guide = mediaUrl,
             description = description,
             muscleGroups = muscleGroups,
             mediaUrl = mediaUrl,
@@ -156,6 +178,7 @@ class AddExerciseActivity : AppCompatActivity() {
         db.collection("exercises").document(exerciseId)
             .set(exercise)
             .addOnSuccessListener {
+                Toast.makeText(this, "Вправу успішно додано", Toast.LENGTH_SHORT).show()
                 val resultIntent = Intent().apply {
                     putExtra("EXERCISE", exercise)
                 }
@@ -167,37 +190,44 @@ class AddExerciseActivity : AppCompatActivity() {
             }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_CODE_READ_EXTERNAL_STORAGE -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    // Дозволи надано, відкриваємо picker
+                    openMediaPicker()
+                } else {
+                    Toast.makeText(this, "Для вибору медіафайлу потрібні дозволи", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SELECT_MEDIA && resultCode == Activity.RESULT_OK) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Потрібен дозвіл для доступу до файлів", Toast.LENGTH_SHORT).show()
-                return
-            }
-
             mediaUri = data?.data
-            Log.d("AddExerciseActivity", "Selected media URI: $mediaUri")
             if (mediaUri != null) {
-                // Перевірка доступу до файлу
                 try {
-                    val inputStream = contentResolver.openInputStream(mediaUri!!)
-                    inputStream?.close()
+                    contentResolver.getType(mediaUri!!)?.let { mimeType ->
+                        mediaType = when {
+                            mimeType.startsWith("image/") -> MediaType.IMAGE
+                            mimeType.startsWith("video/") -> MediaType.VIDEO
+                            else -> MediaType.IMAGE
+                        }
+                    }
+                    // Можна додати відображення вибраного файлу
+                    Toast.makeText(this, "Медіафайл вибрано успішно", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "Не вдалося отримати доступ до вибраного файлу", Toast.LENGTH_SHORT).show()
-                    return
+                    Log.e("AddExerciseActivity", "Error accessing file: ${e.message}")
+                    Toast.makeText(this, "Помилка доступу до файлу", Toast.LENGTH_SHORT).show()
+                    mediaUri = null
                 }
-
-                // Визначення типу медіа
-                val mimeType = contentResolver.getType(mediaUri!!)
-                mediaType = if (mimeType?.startsWith("video") == true) {
-                    MediaType.VIDEO
-                } else {
-                    MediaType.IMAGE
-                }
-                binding.textViewSelectedMedia.text = "Медіа вибрано: ${mediaUri?.lastPathSegment}"
             }
         }
     }
