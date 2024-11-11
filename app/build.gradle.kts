@@ -83,6 +83,7 @@ dependencies {
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
     implementation("com.google.firebase:firebase-appcheck-debug") // Только для отладки
     implementation("com.google.firebase:firebase-storage-ktx")
+    implementation ("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation ("androidx.work:work-runtime-ktx:2.7.1")
 

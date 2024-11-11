@@ -26,9 +26,9 @@ class MyApplication : Application() {
             // Замініть на PlayIntegrityAppCheckProviderFactory для продакшн
             FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
 
-                    DebugAppCheckProviderFactory.getInstance()
+                    //DebugAppCheckProviderFactory.getInstance()
 
-                   // PlayIntegrityAppCheckProviderFactory.getInstance()
+                    PlayIntegrityAppCheckProviderFactory.getInstance()
 
             )
             Log.d("MyApplication", "App Check initialized successfully")

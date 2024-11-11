@@ -1,6 +1,7 @@
-<!-- res/layout/activity_add_exercise.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?android:attr/windowBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -59,26 +60,60 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Кнопка вибору медіа -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonSelectMedia"
-            style="@style/Widget.MaterialComponents.Button"
+        <!-- Секція медіа -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Вибрати медіа"
-            app:icon="@android:drawable/ic_menu_gallery"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp" />
+            android:orientation="vertical"
+            android:layout_marginTop="24dp">
 
-        <!-- Текст вибраного медіа -->
-        <TextView
-            android:id="@+id/textViewSelectedMedia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Медіа не вибрано"
-            android:layout_marginTop="8dp"
-            android:textColor="?attr/colorOnBackground" />
+            <!-- Кнопка вибору медіа -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSelectMedia"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Вибрати медіа"
+                app:icon="@android:drawable/ic_menu_gallery"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <!-- Інформація про вибраний файл -->
+            <TextView
+                android:id="@+id/textViewSelectedFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/colorOnBackground"
+                android:visibility="gone"
+                tools:text="Вибрано: example.jpg"
+                tools:visibility="visible" />
+
+            <!-- Контейнер для превью -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <!-- Превью зображення -->
+                <ImageView
+                    android:id="@+id/imageViewPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:background="@android:color/darker_gray"
+                    tools:visibility="visible" />
+
+                <!-- Превью відео -->
+                <VideoView
+                    android:id="@+id/videoViewPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+        </LinearLayout>
 
         <!-- Кнопка збереження вправи -->
         <com.google.android.material.button.MaterialButton

@@ -6,7 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
+import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +21,7 @@ import com.example.gayfit.models.MediaType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import java.util.*
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -49,6 +53,9 @@ class AddExerciseActivity : AppCompatActivity() {
             return
         }
 
+        // Оновлюємо початковий стан UI
+        updateMediaSelectionUI(null)
+
         // Налаштування кнопки вибору медіа
         binding.buttonSelectMedia.setOnClickListener {
             checkAndRequestPermissions()
@@ -57,6 +64,46 @@ class AddExerciseActivity : AppCompatActivity() {
         // Обробка кнопки збереження
         binding.buttonSaveExercise.setOnClickListener {
             saveExercise()
+        }
+    }
+
+
+    private fun updateMediaSelectionUI(uri: Uri?) {
+        if (uri != null) {
+            // Оновлюємо текст кнопки
+            binding.buttonSelectMedia.text = "Змінити медіафайл"
+
+            // Показуємо назву файлу або тип медіа
+            val fileName = getFileName(uri)
+            binding.textViewSelectedFile.text = "Вибрано: $fileName"
+            binding.textViewSelectedFile.visibility = View.VISIBLE
+
+            when (mediaType) {
+                MediaType.IMAGE -> {
+                    // Якщо це зображення, можна показати превью
+                    binding.imageViewPreview.setImageURI(uri)
+                    binding.imageViewPreview.visibility = View.VISIBLE
+                    binding.videoViewPreview.visibility = View.GONE
+                }
+                MediaType.VIDEO -> {
+                    // Якщо це відео, можна показати превью відео
+                    binding.videoViewPreview.setVideoURI(uri)
+                    binding.videoViewPreview.visibility = View.VISIBLE
+                    binding.imageViewPreview.visibility = View.GONE
+                }
+                MediaType.GIF -> {
+                    // Обробляємо GIF як зображення
+                    binding.imageViewPreview.setImageURI(uri)
+                    binding.imageViewPreview.visibility = View.VISIBLE
+                    binding.videoViewPreview.visibility = View.GONE
+                }
+            }
+        } else {
+            // Скидаємо UI до початкового стану
+            binding.buttonSelectMedia.text = "Вибрати медіафайл"
+            binding.textViewSelectedFile.visibility = View.GONE
+            binding.imageViewPreview.visibility = View.GONE
+            binding.videoViewPreview.visibility = View.GONE
         }
     }
 
@@ -107,6 +154,23 @@ class AddExerciseActivity : AppCompatActivity() {
             }
         }
     }
+    private fun getFileName(uri: Uri): String {
+        // Спочатку пробуємо отримати ім'я файлу через курсор
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex != -1) {
+                    return cursor.getString(displayNameIndex)
+                }
+            }
+        }
+
+        // Якщо не вдалося отримати через курсор, пробуємо отримати з Uri
+        uri.lastPathSegment?.let { return it }
+
+        // Якщо все інше не спрацювало, повертаємо базову назву
+        return "вибраний файл"
+    }
 
     private fun openMediaPicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -137,25 +201,61 @@ class AddExerciseActivity : AppCompatActivity() {
 
     private fun uploadMediaFile(uri: Uri, onSuccess: (String) -> Unit) {
         try {
-            val inputStream = contentResolver.openInputStream(uri)
-            inputStream?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Не вдалося отримати доступ до вибраного файлу", Toast.LENGTH_SHORT).show()
-            return
-        }
+            val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
+            val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+            val fileName = UUID.randomUUID().toString() + "." + extension
 
-        val mediaRef = storage.reference.child("exercise_media/${UUID.randomUUID()}")
-        mediaRef.putFile(uri)
-            .addOnSuccessListener {
-                mediaRef.downloadUrl.addOnSuccessListener { downloadUri ->
+            // Створюємо reference з коректним шляхом
+            val storageRef = storage.reference
+                .child("exercise_media")
+                .child(fileName)
+
+            // Перевіряємо розмір файлу
+            val fileSize = contentResolver.openFileDescriptor(uri, "r")?.statSize ?: 0
+            if (fileSize > 100 * 1024 * 1024) { // 100MB limit
+                throw Exception("File size exceeds limit")
+            }
+
+            // Встановлюємо метадані
+            val metadata = StorageMetadata.Builder()
+                .setContentType(mimeType)
+                .build()
+
+            // Завантажуємо файл
+            val uploadTask = storageRef.putFile(uri, metadata)
+
+            uploadTask
+                .addOnProgressListener { taskSnapshot ->
+                    val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
+                    Log.d("Upload", "Progress: $progress%")
+                }
+                .continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let { throw it }
+                    }
+                    storageRef.downloadUrl
+                }
+                .addOnSuccessListener { downloadUri ->
                     onSuccess(downloadUri.toString())
                 }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Помилка завантаження медіа: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener { e ->
+                    Log.e("Upload", "Failed: ${e.message}", e)
+                    Toast.makeText(
+                        this@AddExerciseActivity,
+                        "Upload failed: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+        } catch (e: Exception) {
+            Log.e("Upload", "Error: ${e.message}", e)
+            Toast.makeText(
+                this,
+                "Error: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
+
 
     private fun saveExerciseToFirestore(
         name: String,
@@ -216,19 +316,23 @@ class AddExerciseActivity : AppCompatActivity() {
                 try {
                     contentResolver.getType(mediaUri!!)?.let { mimeType ->
                         mediaType = when {
+                            mimeType.startsWith("image/gif") -> MediaType.GIF
                             mimeType.startsWith("image/") -> MediaType.IMAGE
                             mimeType.startsWith("video/") -> MediaType.VIDEO
                             else -> MediaType.IMAGE
                         }
                     }
-                    // Можна додати відображення вибраного файлу
+                    // Оновлюємо UI після вибору файлу
+                    updateMediaSelectionUI(mediaUri)
                     Toast.makeText(this, "Медіафайл вибрано успішно", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Log.e("AddExerciseActivity", "Error accessing file: ${e.message}")
                     Toast.makeText(this, "Помилка доступу до файлу", Toast.LENGTH_SHORT).show()
                     mediaUri = null
+                    updateMediaSelectionUI(null)
                 }
             }
         }
     }
+
 }
