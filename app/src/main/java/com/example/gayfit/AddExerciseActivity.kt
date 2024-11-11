@@ -20,8 +20,12 @@ import com.example.gayfit.models.Exercise
 import com.example.gayfit.models.MediaType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
+import com.google.gson.Gson
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.util.*
 
 class AddExerciseActivity : AppCompatActivity() {
@@ -29,12 +33,15 @@ class AddExerciseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddExerciseBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private lateinit var storage: FirebaseStorage
     private var mediaUri: Uri? = null
     private var mediaType: MediaType = MediaType.IMAGE
 
     private val REQUEST_CODE_SELECT_MEDIA = 100
     private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 101
+
+    // Cloudinary налаштування
+    private val cloudName = "dsb8rnybi" // Замініть на ваш Cloud Name
+    private val uploadPreset = "5ykC_ZQaRFPu0wLHH4svbjdedK0" // Замініть на ваш Upload Preset
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +50,6 @@ class AddExerciseActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-        storage = FirebaseStorage.getInstance()
 
         // Перевірка автентифікації
         if (auth.currentUser == null) {
@@ -205,57 +211,102 @@ class AddExerciseActivity : AppCompatActivity() {
             val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
             val fileName = UUID.randomUUID().toString() + "." + extension
 
-            // Створюємо reference з коректним шляхом
-            val storageRef = storage.reference
-                .child("exercise_media")
-                .child(fileName)
+            // Використовуйте папку для організації файлів
+            val storagePath = "exercises/$fileName"
 
-            // Перевіряємо розмір файлу
-            val fileSize = contentResolver.openFileDescriptor(uri, "r")?.statSize ?: 0
-            if (fileSize > 100 * 1024 * 1024) { // 100MB limit
-                throw Exception("File size exceeds limit")
+            // Додайте логування шляху
+            Log.d("StoragePath", "Path for upload: $storagePath")
+
+            // Створіть запит до Cloudinary
+            val client = OkHttpClient()
+
+            val inputStream = contentResolver.openInputStream(uri)
+            val bytes = inputStream?.readBytes()
+            if (bytes == null) {
+                Log.e("Upload", "Не вдалося прочитати файл")
+                runOnUiThread {
+                    Toast.makeText(this, "Не вдалося прочитати файл", Toast.LENGTH_LONG).show()
+                }
+                return
             }
 
-            // Встановлюємо метадані
-            val metadata = StorageMetadata.Builder()
-                .setContentType(mimeType)
+            // Переконайтеся, що MediaType не null
+            val mediaTypeObj = mimeType.toMediaTypeOrNull() ?: "application/octet-stream".toMediaType()
+
+            val requestBody = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    "file",
+                    fileName,
+                    bytes.toRequestBody(mediaTypeObj)
+                )
+                .addFormDataPart("upload_preset", uploadPreset)
+                .addFormDataPart("folder", "exercises") // Додаємо папку, якщо потрібно
                 .build()
 
-            // Завантажуємо файл
-            val uploadTask = storageRef.putFile(uri, metadata)
+            val request = Request.Builder()
+                .url("https://api.cloudinary.com/v1_1/$cloudName/upload")
+                .post(requestBody)
+                .build()
 
-            uploadTask
-                .addOnProgressListener { taskSnapshot ->
-                    val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
-                    Log.d("Upload", "Progress: $progress%")
-                }
-                .continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { throw it }
+            Log.d("Upload", "Starting upload to Cloudinary...")
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("Upload", "Не вдалося завантажити файл: ${e.message}", e)
+                    runOnUiThread {
+                        Toast.makeText(this@AddExerciseActivity, "Завантаження не вдалося: ${e.message}", Toast.LENGTH_LONG).show()
                     }
-                    storageRef.downloadUrl
                 }
-                .addOnSuccessListener { downloadUri ->
-                    onSuccess(downloadUri.toString())
+
+                override fun onResponse(call: Call, response: Response) {
+                    if (!response.isSuccessful) {
+                        val responseBody = response.body?.string()
+                        Log.e("Upload", "Не вдалося завантажити файл: ${response.message}. Body: $responseBody")
+                        runOnUiThread {
+                            Toast.makeText(this@AddExerciseActivity, "Завантаження не вдалося: ${response.message}", Toast.LENGTH_LONG).show()
+                        }
+                        return
+                    }
+
+                    response.body?.let { responseBody ->
+                        val responseString = responseBody.string()
+                        Log.d("Upload", "Отримана відповідь: $responseString")
+
+                        // Парсимо JSON відповідь
+                        val gson = Gson()
+                        val cloudinaryResponse = gson.fromJson(responseString, CloudinaryResponse::class.java)
+
+                        // Переконайтеся, що secure_url присутній
+                        val mediaUrl = cloudinaryResponse.secure_url
+                        if (mediaUrl.isNullOrEmpty()) {
+                            Log.e("Upload", "secure_url відсутній у відповіді")
+                            runOnUiThread {
+                                Toast.makeText(this@AddExerciseActivity, "Не вдалося отримати URL файлу", Toast.LENGTH_LONG).show()
+                            }
+                            return
+                        }
+
+                        Log.d("Upload", "Файл успішно завантажено. URL: $mediaUrl")
+
+                        runOnUiThread {
+                            onSuccess(mediaUrl)
+                        }
+                    } ?: run {
+                        Log.e("Upload", "Пустий body у відповіді")
+                        runOnUiThread {
+                            Toast.makeText(this@AddExerciseActivity, "Пустий body у відповіді", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
-                .addOnFailureListener { e ->
-                    Log.e("Upload", "Failed: ${e.message}", e)
-                    Toast.makeText(
-                        this@AddExerciseActivity,
-                        "Upload failed: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+            })
         } catch (e: Exception) {
-            Log.e("Upload", "Error: ${e.message}", e)
-            Toast.makeText(
-                this,
-                "Error: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            Log.e("Upload", "Помилка: ${e.message}", e)
+            runOnUiThread {
+                Toast.makeText(this, "Помилка: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
     }
-
 
     private fun saveExerciseToFirestore(
         name: String,
@@ -335,4 +386,22 @@ class AddExerciseActivity : AppCompatActivity() {
         }
     }
 
+    // Клас для парсингу відповіді Cloudinary
+    data class CloudinaryResponse(
+        val public_id: String,
+        val version: Long,
+        val signature: String,
+        val width: Int,
+        val height: Int,
+        val format: String,
+        val resource_type: String,
+        val created_at: String,
+        val tags: List<String>,
+        val bytes: Int,
+        val type: String,
+        val etag: String,
+        val placeholder: Boolean,
+        val url: String,
+        val secure_url: String
+    )
 }

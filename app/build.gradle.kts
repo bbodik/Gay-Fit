@@ -86,7 +86,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
+    // Gson для обробки JSON
+    implementation("com.google.code.gson:gson:2.10")
 
     // Firebase UI для аутентификации
     implementation("com.firebaseui:firebase-ui-auth:8.0.0")
