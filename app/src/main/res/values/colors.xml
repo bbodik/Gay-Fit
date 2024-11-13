@@ -23,6 +23,13 @@
     <color name="textColorPrimary">#212121</color> <!-- Основний текст -->
     <color name="textColorSecondary">#757575</color> <!-- Другорядний текст -->
 
+    <color name="colorPrimaryDark">#3700B3</color>
+
+    <color name="colorSecondaryDark">#018786</color>
+
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <!-- Темна тема -->
     <color name="colorBackgroundDark">#121212</color>
     <color name="colorSurfaceDark">#1E1E1E</color>

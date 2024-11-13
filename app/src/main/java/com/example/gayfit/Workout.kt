@@ -34,6 +34,7 @@ data class SharedWorkout(
     var id: String = "",
     var creatorId: String = "",
     var title: String = "",
+    var description: String = "", // Додано поле опису
     var exercises: List<ExerciseInWorkout> = emptyList(),
     var userCount: Int = 0
 ) : Serializable {

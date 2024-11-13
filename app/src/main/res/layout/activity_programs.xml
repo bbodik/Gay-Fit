@@ -16,7 +16,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:title="Тренування"
-            android:titleTextColor="@color/colorPrimaryVariant" />
+            android:titleTextColor="@color/colorPrimaryVariant"
+            app:menu="@menu/menu_programs" /> <!-- Додаємо меню -->/>
 
         <!-- TabLayout без TabItem -->
         <com.google.android.material.tabs.TabLayout

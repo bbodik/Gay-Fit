@@ -2,10 +2,6 @@ package com.example.gayfit
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.example.gayfit.ExerciseEntity
-import com.example.gayfit.SetEntity
-import com.example.gayfit.WorkoutEntity
-
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -24,10 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.io.Serializable
-import androidx.work.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.work.*
 
 class ExerciseActivity : AppCompatActivity() {
 
@@ -91,7 +86,6 @@ class ExerciseActivity : AppCompatActivity() {
         val currentExercise = currentExerciseInWorkout.exercise
         binding.apply {
             textViewExerciseName.text = currentExercise.name
-            // Замість використання ресурсу рядка
             textViewSetNumber.text = "Підхід $currentSetNumber з ${currentExerciseInWorkout.sets}"
             editTextReps.text?.clear()
             editTextWeight.text?.clear()
@@ -102,30 +96,29 @@ class ExerciseActivity : AppCompatActivity() {
 
     private fun displayExerciseMedia(exercise: Exercise) {
         if (isNetworkAvailable()) {
-        binding.apply {
-            when (exercise.mediaType) {
-                MediaType.IMAGE, MediaType.GIF -> {
-                    imageViewExercise.visibility = View.VISIBLE
-                    playerViewExercise.visibility = View.GONE
-                    exoPlayer?.release()
-                    exoPlayer = null
+            binding.apply {
+                when (exercise.mediaType) {
+                    MediaType.IMAGE, MediaType.GIF -> {
+                        imageViewExercise.visibility = View.VISIBLE
+                        playerViewExercise.visibility = View.GONE
+                        exoPlayer?.release()
+                        exoPlayer = null
 
-                    Glide.with(this@ExerciseActivity)
-                        .load(exercise.mediaUrl)
-                        .error(R.drawable.placeholder_exercise)
-                        .into(imageViewExercise)
-                }
+                        Glide.with(this@ExerciseActivity)
+                            .load(exercise.mediaUrl)
+                            .error(R.drawable.placeholder_exercise)
+                            .into(imageViewExercise)
+                    }
 
-                MediaType.VIDEO -> {
-                    imageViewExercise.visibility = View.GONE
-                    playerViewExercise.visibility = View.VISIBLE
-                    setupPlayer(exercise.mediaUrl, playerViewExercise)
+                    MediaType.VIDEO -> {
+                        imageViewExercise.visibility = View.GONE
+                        playerViewExercise.visibility = View.VISIBLE
+                        setupPlayer(exercise.mediaUrl, playerViewExercise)
+                    }
                 }
             }
-        }
         } else {
             Toast.makeText(this, "Немає інтернет-з'єднання. Медіа недоступне.", Toast.LENGTH_SHORT).show()
-
         }
     }
 
@@ -145,6 +138,7 @@ class ExerciseActivity : AppCompatActivity() {
         val networkInfo = connectivityManager.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }
+
     private fun validateInput(): Boolean {
         val repsText = binding.editTextReps.text.toString()
         val weightText = binding.editTextWeight.text.toString()
@@ -197,8 +191,6 @@ class ExerciseActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun proceedToNextSetOrExercise() {
         if (binding.checkBoxApplyToAllSets.isChecked) {
             // Якщо обрано застосувати до всіх підходів, переходимо до наступної вправи
@@ -229,13 +221,12 @@ class ExerciseActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun saveWorkout() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
 
+                // Зберігаємо тренування локально
                 val workout = WorkoutEntity(
                     userId = userId,
                     date = System.currentTimeMillis(),
@@ -276,8 +267,8 @@ class ExerciseActivity : AppCompatActivity() {
                     }
                 }
 
-                // Додаємо лог перед запуском воркера для синхронізації
-                Log.d("ExerciseActivity", "Тренування збережено локально, готуємо синхронізацію")
+                // Синхронізація з Firestore
+                saveWorkoutToFirestore()
 
                 // Запуск воркера для синхронізації з Firebase
                 val constraints = Constraints.Builder()
@@ -291,7 +282,7 @@ class ExerciseActivity : AppCompatActivity() {
                 WorkManager.getInstance(this@ExerciseActivity).enqueue(syncWorkRequest)
 
                 withContext(Dispatchers.Main) {
-                    showSuccess("Тренування збережено локально")
+                    showSuccess("Тренування збережено локально та синхронізовано з Firebase")
                     finish()
                 }
 
@@ -303,9 +294,35 @@ class ExerciseActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun saveWorkoutToFirestore() {
+        try {
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
 
+            // Створюємо об'єкт тренування для збереження
+            val workoutCompleted = WorkoutCompleted(
+                id = "",
+                userId = userId,
+                date = System.currentTimeMillis(),
+                program = workoutTitle,
+                exercises = userInputs.map { exercise ->
+                    ExerciseCompleted(
+                        name = exercise.name,
+                        muscleGroups = exercise.muscleGroups,
+                        sets = exercise.sets.toMutableList()
+                    )
+                }
+            )
 
+            // Зберігаємо в Firestore
+            db.collection("workout_results")
+                .add(workoutCompleted)
+                .await()
 
+            Log.d("ExerciseActivity", "Тренування успішно збережено у Firestore")
+        } catch (e: Exception) {
+            Log.e("ExerciseActivity", "Помилка при збереженні тренування у Firestore: ${e.message}")
+        }
+    }
 
     private fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

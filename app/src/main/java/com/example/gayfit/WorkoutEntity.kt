@@ -21,6 +21,7 @@ data class WorkoutEntity(
 data class SavedWorkoutEntity(
     @PrimaryKey val id: String,
     val title: String,
+    val description: String, // Додано поле опису
     val exercises: List<ExerciseInWorkout>
 )
 

@@ -1,8 +1,10 @@
+// WorkoutDetailsActivity.kt
 package com.example.gayfit
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -63,8 +65,9 @@ class WorkoutDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        // Відображаємо назву тренування
+        // Відображаємо назву та опис тренування
         binding.textViewWorkoutTitle.text = workout.title
+        binding.textViewWorkoutDescription.text = workout.description // Додано відображення опису
 
         // Налаштовуємо RecyclerView для відображення вправ
         binding.recyclerViewExercises.layoutManager = LinearLayoutManager(this)
@@ -106,6 +109,7 @@ class WorkoutDetailsActivity : AppCompatActivity() {
             val savedWorkoutEntity = SavedWorkoutEntity(
                 id = workout.id,
                 title = workout.title,
+                description = workout.description, // Збереження опису
                 exercises = workout.exercises
             )
             WorkoutDatabase.getDatabase(this@WorkoutDetailsActivity)
@@ -124,6 +128,7 @@ class WorkoutDetailsActivity : AppCompatActivity() {
             val savedWorkoutEntity = SavedWorkoutEntity(
                 id = workout.id,
                 title = workout.title,
+                description = workout.description, // Потрібно зберегти опис для видалення
                 exercises = workout.exercises
             )
             WorkoutDatabase.getDatabase(this@WorkoutDetailsActivity)

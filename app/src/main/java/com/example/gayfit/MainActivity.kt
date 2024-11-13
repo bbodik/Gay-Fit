@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.gayfit.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.firebase.ui.auth.AuthUI
@@ -37,6 +38,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Налаштування Toolbar
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
         auth = FirebaseAuth.getInstance()
 
         if (auth.currentUser == null) {
@@ -47,14 +52,8 @@ class MainActivity : AppCompatActivity() {
             setupMainUI()
         }
 
-        // Приклад кнопки виходу
-        binding.buttonLogout.setOnClickListener {
-            auth.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            // Очищаємо стек активностей
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-        }
+        // Приклад кнопки виходу (якщо є у макеті)
+
     }
 
     private fun showSignInOptions() {
@@ -95,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu) // Завантажуємо меню з res/menu/main_menu.xml
         return true
     }
 

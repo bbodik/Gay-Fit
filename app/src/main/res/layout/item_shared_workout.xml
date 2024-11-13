@@ -24,6 +24,13 @@
         android:textSize="14sp"
         android:textColor="@color/colorOnSurfaceVariant"></TextView>
 
+    <TextView
+        android:id="@+id/textViewDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Опис тренування"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
 
 
 </LinearLayout>

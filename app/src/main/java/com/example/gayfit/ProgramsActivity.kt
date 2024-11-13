@@ -1,3 +1,4 @@
+// ProgramsActivity.kt
 package com.example.gayfit
 
 import android.content.Context
@@ -6,7 +7,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gayfit.adapters.SharedWorkoutAdapter
@@ -30,6 +33,7 @@ class ProgramsActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private val items = mutableListOf<WorkoutItem>()
     private var currentTab = 0 // 0 - онлайн, 1 - збережені
+    private var allWorkouts = listOf<WorkoutItem>() // Для фільтрації
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,9 @@ class ProgramsActivity : AppCompatActivity() {
         // Ініціалізуємо binding
         binding = ActivityProgramsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Налаштовуємо Toolbar
+        setSupportActionBar(binding.toolbar)
 
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
@@ -100,6 +107,46 @@ class ProgramsActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_programs, menu)
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as? SearchView
+
+        searchView?.queryHint = "Пошук тренувань..."
+
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Не використовується
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterWorkouts(newText)
+                return true
+            }
+        })
+
+        return true
+    }
+
+    private fun filterWorkouts(query: String?) {
+        if (query.isNullOrEmpty()) {
+            workoutAdapter.updateItems(allWorkouts)
+            return
+        }
+
+        val filteredList = allWorkouts.filter { item ->
+            when (item) {
+                is WorkoutItem.Online -> item.workout.title.contains(query, ignoreCase = true) ||
+                        item.workout.description.contains(query, ignoreCase = true)
+                is WorkoutItem.Saved -> item.workout.title.contains(query, ignoreCase = true) ||
+                        item.workout.description.contains(query, ignoreCase = true)
+            }
+        }
+
+        workoutAdapter.updateItems(filteredList)
+    }
+
     private fun loadSavedWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             val savedWorkouts = WorkoutDatabase.getDatabase(this@ProgramsActivity)
@@ -111,6 +158,7 @@ class ProgramsActivity : AppCompatActivity() {
 
             items.clear()
             items.addAll(savedWorkouts)
+            allWorkouts = items.toList() // Зберігаємо копію для фільтрації
             runOnUiThread {
                 workoutAdapter.updateItems(items)
             }
@@ -130,6 +178,7 @@ class ProgramsActivity : AppCompatActivity() {
                 }
                 items.clear()
                 items.addAll(onlineWorkouts)
+                allWorkouts = items.toList() // Зберігаємо копію для фільтрації
                 workoutAdapter.updateItems(items)
             }
             .addOnFailureListener { e ->

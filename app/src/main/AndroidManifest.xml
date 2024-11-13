@@ -42,6 +42,7 @@
         <activity android:name=".WorkoutHistoryActivity" />
         <activity android:name=".AddExerciseActivity" />
         <activity android:name=".StatisticsActivity" />
+        <activity android:name=".ExerciseSelectionActivity" />
         <!-- Видалено WorkoutAdapter та WorkoutReminderWorker -->
         <activity android:name=".SettingsActivity" />
 

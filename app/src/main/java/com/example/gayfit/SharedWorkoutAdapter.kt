@@ -60,10 +60,12 @@ class SharedWorkoutAdapter(
 
     inner class OnlineWorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
+        private val descriptionTextView: TextView = itemView.findViewById(R.id.textViewDescription)
         private val userCountTextView: TextView = itemView.findViewById(R.id.textViewUserCount)
 
         fun bind(workout: SharedWorkout) {
             titleTextView.text = workout.title
+            descriptionTextView.text = workout.description
             userCountTextView.text = "Користувачів: ${workout.userCount}"
             itemView.setOnClickListener { onWorkoutSelected(workout) }
         }
@@ -71,9 +73,11 @@ class SharedWorkoutAdapter(
 
     inner class SavedWorkoutViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
+        private val descriptionTextView: TextView = itemView.findViewById(R.id.textViewDescription)
 
         fun bind(workout: SavedWorkoutEntity) {
             titleTextView.text = workout.title
+            descriptionTextView.text = workout.description
             itemView.setOnClickListener { onSavedWorkoutSelected(workout) }
         }
     }
