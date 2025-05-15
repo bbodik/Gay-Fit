@@ -28,9 +28,9 @@
     <androidx.media3.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:use_controller="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="440dp"
+        android:layout_marginTop="16dp"
+        app:use_controller="true" />
     <ImageView
         android:id="@+id/imageViewPreview"
         android:layout_width="match_parent"
