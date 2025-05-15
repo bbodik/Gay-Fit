@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.example.gayfit
 
 import android.content.Intent
@@ -10,27 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.gayfit.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityMainBinding
-
-    private val signInLauncher = registerForActivityResult(
-        FirebaseAuthUIActivityResultContract()
-    ) { res ->
-        val response = res.idpResponse
-        if (res.resultCode == RESULT_OK) {
-            // Вхід успішний
-            Toast.makeText(this, "Вхід успішний", Toast.LENGTH_SHORT).show()
-            setupMainUI()
-        } else {
-            // Вхід не вдався
-            Toast.makeText(this, "Вхід не вдався: ${response?.error?.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,34 +29,15 @@ class MainActivity : AppCompatActivity() {
 
         if (auth.currentUser == null) {
             // Користувач не увійшов, показати екран входу
-            showSignInOptions()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         } else {
             // Користувач увійшов, показати MainActivity
             setupMainUI()
         }
-
-        // Приклад кнопки виходу (якщо є у макеті)
-
     }
 
-    private fun showSignInOptions() {
-        // Налаштування провайдерів
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.EmailBuilder().build()
-            // Можеш додати інші провайдери, якщо потрібно
-        )
-
-        // Створення і запуск Intent для входу
-        val signInIntent = AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            .setIsSmartLockEnabled(false) // Вимкнути SmartLock для налагодження
-            .build()
-
-        signInLauncher.launch(signInIntent)
-    }
-
-    fun setupMainUI() {
+    private fun setupMainUI() {
         // Ініціалізація UI елементів MainActivity
         binding.apply {
             startWorkoutButton.setOnClickListener {
@@ -106,10 +70,10 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_logout -> {
-                AuthUI.getInstance().signOut(this).addOnCompleteListener {
-                    Toast.makeText(this, "Ви вийшли з облікового запису", Toast.LENGTH_SHORT).show()
-                    showSignInOptions()
-                }
+                auth.signOut()
+                Toast.makeText(this, "Ви вийшли з облікового запису", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)

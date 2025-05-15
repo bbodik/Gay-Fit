@@ -23,6 +23,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.work.*
+import java.util.*
 
 class ExerciseActivity : AppCompatActivity() {
 
@@ -237,6 +238,8 @@ class ExerciseActivity : AppCompatActivity() {
                     .workoutDao()
                     .insertWorkout(workout)
 
+                workout.id = workoutId // Встановлюємо ID після вставки
+
                 Log.d("ExerciseActivity", "Збережено тренування з ID: $workoutId")
 
                 for (exerciseCompleted in userInputs) {
@@ -268,7 +271,7 @@ class ExerciseActivity : AppCompatActivity() {
                 }
 
                 // Синхронізація з Firestore
-                saveWorkoutToFirestore()
+                saveWorkoutToFirestore(workout)
 
                 // Запуск воркера для синхронізації з Firebase
                 val constraints = Constraints.Builder()
@@ -294,7 +297,7 @@ class ExerciseActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun saveWorkoutToFirestore() {
+    private suspend fun saveWorkoutToFirestore(workout: WorkoutEntity) {
         try {
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
 
@@ -302,8 +305,8 @@ class ExerciseActivity : AppCompatActivity() {
             val workoutCompleted = WorkoutCompleted(
                 id = "",
                 userId = userId,
-                date = System.currentTimeMillis(),
-                program = workoutTitle,
+                date = workout.date,
+                program = workout.program,
                 exercises = userInputs.map { exercise ->
                     ExerciseCompleted(
                         name = exercise.name,
@@ -319,6 +322,13 @@ class ExerciseActivity : AppCompatActivity() {
                 .await()
 
             Log.d("ExerciseActivity", "Тренування успішно збережено у Firestore")
+
+            // Оновлюємо поле isSynced в локальній базі даних
+            workout.isSynced = true
+            WorkoutDatabase.getDatabase(this@ExerciseActivity)
+                .workoutDao()
+                .updateWorkout(workout)
+
         } catch (e: Exception) {
             Log.e("ExerciseActivity", "Помилка при збереженні тренування у Firestore: ${e.message}")
         }

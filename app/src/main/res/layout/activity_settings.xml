@@ -54,13 +54,6 @@
             <!-- Додаткові налаштування -->
 
             <!-- Темна тема -->
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchDarkTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Темна тема"
-                android:textColor="?attr/colorOnBackground" />
 
             <!-- Повідомлення -->
             <com.google.android.material.switchmaterial.SwitchMaterial
