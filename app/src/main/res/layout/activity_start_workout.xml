@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/windowBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Верхня панель -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarStartWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:title="Розпочати тренування"
+        android:titleTextColor="@color/colorOnPrimary"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
+
+    <!-- Основний вміст -->
+    <LinearLayout
+        android:id="@+id/layoutWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Назва вправи -->
+        <TextView
+            android:id="@+id/textViewCurrentExercise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Назва вправи"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textStyle="bold"
+            android:textColor="@color/colorOnBackground" />
+
+        <!-- Опис вправи -->
+        <TextView
+            android:id="@+id/textViewExerciseDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Опис вправи"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorOnBackgroundVariant" />
+
+        <!-- Поля для введення сетів, повторень та ваги -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp">
+
+            <!-- Кількість сетів -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Кількість сетів"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextSets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Кількість повторень -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Кількість повторень"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextReps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Вага -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:hint="Вага (кг)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextWeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Кнопка наступної вправи -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNextExercise"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Наступна вправа"
+            app:backgroundTint="@color/colorPrimary"
+            app:icon="@android:drawable/ic_media_next"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+        <!-- Прогрес бар -->
+        <ProgressBar
+            android:id="@+id/progressBarWorkout"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:max="100"
+            android:progress="0" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

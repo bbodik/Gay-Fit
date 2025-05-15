@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Основні кольори -->
+    <color name="colorPrimary">#1E88E5</color> <!-- Насичений синій -->
+    <color name="colorPrimaryVariant">#1565C0</color> <!-- Темніший відтінок синього -->
+    <color name="colorPrimaryLight">#BBDEFB</color> <!-- Світліший відтінок синього -->
+    <color name="colorSecondary">#FF5722</color> <!-- Яскравий оранжевий акцент -->
+    <color name="colorSecondaryVariant">#FFAB91</color> <!-- Світліший оранжевий -->
+    <color name="colorAccent">#FFC107</color> <!-- Яскраво-жовтий акцент -->
+
+
+
+    <!-- Нейтральні кольори -->
+    <color name="colorBackground">#FFFFFF</color> <!-- Білий фон -->
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Білий текст на первинному кольорі -->
+    <color name="colorOnSecondary">#FFFFFF</color> <!-- Білий текст на вторинному кольорі -->
+    <color name="colorOnBackground">#000000</color> <!-- Чорний текст на фоні -->
+    <color name="colorOnSurface">#000000</color> <!-- Чорний текст на поверхні -->
+    <color name="colorOnSurfaceVariant">#757575</color> <!-- Сірий текст на поверхні -->
+    <color name="colorOnBackgroundVariant">#757575</color>
+    <!-- Текстові кольори -->
+    <color name="textColorPrimary">#212121</color> <!-- Основний текст -->
+    <color name="textColorSecondary">#757575</color> <!-- Другорядний текст -->
+
+    <color name="colorPrimaryDark">#3700B3</color>
+
+    <color name="colorSecondaryDark">#018786</color>
+
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <!-- Темна тема -->
+    <color name="colorBackgroundDark">#121212</color>
+    <color name="colorSurfaceDark">#1E1E1E</color>
+    <color name="colorOnBackgroundDark">#FFFFFF</color>
+    <color name="colorOnSurfaceDark">#FFFFFF</color>
+
+    <!-- Додаткові кольори -->
+    <color name="colorError">#B00020</color>
+    <color name="colorOnError">#FFFFFF</color>
+</resources>

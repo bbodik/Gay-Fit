@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Gay Fit</string>
+    <string name="gay_fit_text">GAY FIT</string>
+    <string name="set_number_format">Підхід %1$d з %2$d</string>
+</resources>

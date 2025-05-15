@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "945518842180",
+    "project_id": "gay-fit",
+    "storage_bucket": "gay-fit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945518842180:android:2621ecd6bb9bbdf9560711",
+        "android_client_info": {
+          "package_name": "com.example.gayfit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCPemG7S8cyZl551iQwszluqFoLL0Rorc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

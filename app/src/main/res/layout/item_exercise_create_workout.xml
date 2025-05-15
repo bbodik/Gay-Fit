@@ -1,0 +1,28 @@
+<!-- res/layout/item_exercise_create_workout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="8dp"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <!-- Назва вправи -->
+    <TextView
+        android:id="@+id/textViewExerciseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Назва вправи"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textStyle="bold"
+        android:textColor="@color/colorOnSurface"/>
+
+    <!-- Сети та повторення -->
+    <TextView
+        android:id="@+id/textViewExerciseDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сети: 3, Повторення: 10"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/colorOnSurfaceVariant"/>
+
+</LinearLayout>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_exercise"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ExerciseActivity">
+
+    <TextView
+        android:id="@+id/textViewExerciseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Назва вправи"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewSetNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Підхід 1 з 3"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+    <ImageView
+        android:id="@+id/imageViewExercise"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerViewExercise"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:use_controller="true"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Введіть кількість повторень та вагу для підходу"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/editTextReps"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="8dp"
+        android:hint="Кількість повторень"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editTextWeight"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="8dp"
+        android:hint="Вага (кг)"
+        android:inputType="numberDecimal" />
+
+    <CheckBox
+        android:id="@+id/checkBoxApplyToAllSets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Застосувати до всіх підходів"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Зберегти та продовжити"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>
